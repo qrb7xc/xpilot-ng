@@ -626,7 +626,7 @@ static void Button_MetaRowWidget(Uint8 button, Uint8 state, Uint16 x,
 
     row = (MetaRowWidget*)widget->wid_info;
     if (row->is_selected) {
-	evt.type = SDL_USEREVENT;
+	evt.type = SDL_EVENT_USER;
 	evt.user.code = EVENT_JOIN;
 	evt.user.data1 = row->sip;
 	SDL_PushEvent(&evt);
@@ -923,7 +923,7 @@ static void Close_MetaWidget(GLWidget *widget)
 static void OnClick_Join(GLWidget *widget)
 {
     SDL_Event evt;
-    evt.type = SDL_USEREVENT;
+    evt.type = SDL_EVENT_USER;
     evt.user.code = EVENT_JOIN;
     evt.user.data1 = NULL;
     SDL_PushEvent(&evt);
@@ -932,7 +932,7 @@ static void OnClick_Join(GLWidget *widget)
 static void OnClick_Refresh(GLWidget *widget)
 {
     SDL_Event evt;
-    evt.type = SDL_USEREVENT;
+    evt.type = SDL_EVENT_USER;
     evt.user.code = EVENT_REFRESH;
     evt.user.data1 = NULL;
     SDL_PushEvent(&evt);
@@ -941,7 +941,7 @@ static void OnClick_Refresh(GLWidget *widget)
 static void OnClick_Quit(GLWidget *widget)
 {
     SDL_Event evt;
-    evt.type = SDL_QUIT;
+    evt.type = SDL_EVENT_QUIT;
     SDL_PushEvent(&evt);
 }
 
@@ -993,7 +993,7 @@ static GLWidget *Init_MetaWidget(list_t servers)
     surface = IMG_Load(texture_file);
     if (surface) {
 	info->texture = SDL_GL_LoadTexture(surface, &(info->txc));
-	SDL_FreeSurface(surface);
+	SDL_DestroySurface(surface);
     }
 #endif
 
@@ -1029,14 +1029,14 @@ static void handleKeyPress(GLWidget *meta, SDL_Keysym *keysym )
     {
     case SDLK_ESCAPE:
 	/* ESC key was pressed */
-	evt.type = SDL_QUIT;
+	evt.type = SDL_EVENT_QUIT;
 	SDL_PushEvent(&evt);
 	break;
     case SDLK_RETURN:
     case SDLK_KP_ENTER:
     	OnClick_Join(NULL);
 	break;
-    case SDLK_r:
+    case SDLK_R:
     	OnClick_Refresh(NULL);
 	break;
     case SDLK_F11:
@@ -1199,10 +1199,10 @@ int Meta_window(Connect_param_t *conpar)
 	do {
 	    
 	    switch(evt.type) {
-	    case SDL_QUIT: 
+	    case SDL_EVENT_QUIT: 
 		return -1;
 		
-	    case SDL_USEREVENT:
+	    case SDL_EVENT_USER:
 		if (evt.user.code == EVENT_JOIN) {
 		    server = (server_info_t*)evt.user.data1;
 		    if (server == NULL)
@@ -1222,12 +1222,12 @@ int Meta_window(Connect_param_t *conpar)
 		}
 		break;
 
-	    case SDL_KEYDOWN:
+	    case SDL_EVENT_KEY_DOWN:
 	        /* handle key presses */
 	        handleKeyPress( meta, &evt.key.keysym );
 	        break;
 
-	    case SDL_MOUSEBUTTONDOWN:
+	    case SDL_EVENT_MOUSE_BUTTON_DOWN:
 		target = FindGLWidgeti(meta, evt.button.x, evt.button.y);
 		if (target && target->button)
 		    target->button(evt.button.button, 
@@ -1237,7 +1237,7 @@ int Meta_window(Connect_param_t *conpar)
 				   target->buttondata);
 		break;
 		
-	    case SDL_MOUSEBUTTONUP:
+	    case SDL_EVENT_MOUSE_BUTTON_UP:
 		if (target && target->button) {
 		    target->button(evt.button.button, 
 				   evt.button.state,
@@ -1248,7 +1248,7 @@ int Meta_window(Connect_param_t *conpar)
 		}
 		break;
 		
-	    case SDL_MOUSEMOTION:
+	    case SDL_EVENT_MOUSE_MOTION:
 		if (target && target->motion)
 		    target->motion(evt.motion.xrel,
 				   evt.motion.yrel,
@@ -1259,7 +1259,7 @@ int Meta_window(Connect_param_t *conpar)
 
 	    case SDL_WINDOWEVENT:
 	    	switch (evt.window.event) {
-	    case SDL_WINDOWEVENT_EXPOSED:
+	    case SDL_EVENT_WINDOW_EXPOSED:
 		glDisable(GL_SCISSOR_TEST);
 		set_alphacolor(blackRGBA);
 		glBegin(GL_QUADS);

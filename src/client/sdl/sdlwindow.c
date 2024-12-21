@@ -60,7 +60,7 @@ int sdl_window_resize(sdl_window_t *win, int width, int height)
     }
 
     if (win->surface != NULL) {
-	SDL_FreeSurface(win->surface);
+	SDL_DestroySurface(win->surface);
     }
 
     win->surface = surface;
@@ -110,6 +110,6 @@ void sdl_window_destroy(sdl_window_t *win)
 {
     glDeleteTextures(1, &win->tx_id);
     if (win->surface != NULL)
-	SDL_FreeSurface(win->surface);
+	SDL_DestroySurface(win->surface);
 }
 

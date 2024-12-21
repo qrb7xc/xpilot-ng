@@ -45,10 +45,10 @@ void Platform_specific_pointer_control_set_state(bool on)
 
     if (on) {
     	MainWidget_ShowMenu(MainWidget, false);
-	SDL_SetRelativeMouseMode(SDL_TRUE);
+	SDL_SetRelativeMouseMode(true);
     } else {
     	MainWidget_ShowMenu(MainWidget, true);
-    	SDL_SetRelativeMouseMode(SDL_FALSE);
+    	SDL_SetRelativeMouseMode(false);
     }
     
 #ifdef HAVE_XF86MISC
@@ -128,23 +128,23 @@ int Process_event(SDL_Event *evt)
     
     switch (evt->type) {
 	
-    case SDL_QUIT:
+    case SDL_EVENT_QUIT:
 	Client_exit(0);
 	break;
 	
-    case SDL_KEYDOWN:
+    case SDL_EVENT_KEY_DOWN:
 	if (Console_isVisible()) break;
 	if (evt->key.repeat == 0)
 	    Keyboard_button_pressed((xp_keysym_t)evt->key.keysym.sym);
 	break;
 	
-    case SDL_KEYUP:
+    case SDL_EVENT_KEY_UP:
         /* letting release events through to prevent some keys from locking */
 	/*if (Console_isVisible()) break;*/
 	Keyboard_button_released((xp_keysym_t)evt->key.keysym.sym);
 	break;
 	
-    case SDL_MOUSEBUTTONDOWN:
+    case SDL_EVENT_MOUSE_BUTTON_DOWN:
 	button = evt->button.button;
 	if (!clData.pointerControl) {
 	    if ( (clicktarget[button-1] = FindGLWidget(MainWidget,evt->button.x,evt->button.y)) ) {
@@ -160,14 +160,14 @@ int Process_event(SDL_Event *evt)
 	}
 	break;
 	
-    case SDL_MOUSEMOTION:
+    case SDL_EVENT_MOUSE_MOTION:
 	if (clData.pointerControl) {
 	    mouseMovement += evt->motion.xrel;
 	} else {
 	    /*xpprintf("mouse motion xrel=%i yrel=%i\n",evt->motion.xrel,evt->motion.yrel);*/
 	    /*for (i = 0;i<NUM_MOUSE_BUTTONS;++i)*/ /* dragdrop for all mouse buttons*/
 	    if (clicktarget[0]) { /*is button one pressed?*/
-	    	/*xpprintf("SDL_MOUSEBUTTONDOWN drag: area found!\n");*/
+	    	/*xpprintf("SDL_EVENT_MOUSE_BUTTON_DOWN drag: area found!\n");*/
 	    	if (clicktarget[0]->motion) {
 		    clicktarget[0]->motion(evt->motion.xrel,evt->motion.yrel,
 		    	    	    	evt->button.x,evt->button.y,
@@ -188,7 +188,7 @@ int Process_event(SDL_Event *evt)
 	}
 	break;
 	
-    case SDL_MOUSEBUTTONUP:
+    case SDL_EVENT_MOUSE_BUTTON_UP:
 	button = evt->button.button;
 	if (clData.pointerControl) {
 	    Pointer_button_released(button);
@@ -206,7 +206,7 @@ int Process_event(SDL_Event *evt)
 
     case SDL_WINDOWEVENT:
 	switch (evt->window.event) {
-    	case SDL_WINDOWEVENT_RESIZED:
+    	case SDL_EVENT_WINDOW_RESIZED:
 	    Resize_Window(evt->window.data1, evt->window.data2);
 	    break;
 	}

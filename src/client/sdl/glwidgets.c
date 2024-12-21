@@ -3455,7 +3455,7 @@ static void confmenu_callback( void )
 static void ConfMenuWidget_Quit( void *data )
 {
     SDL_Event quit;
-    quit.type = SDL_QUIT;
+    quit.type = SDL_EVENT_QUIT;
     SDL_PushEvent(&quit);
 }
 
@@ -4087,7 +4087,7 @@ GLWidget *Init_ImageButtonWidget(const char *text,
 	info->imageUp = SDL_GL_LoadTexture(surface, &(info->txcUp));
 	if (width < surface->w) width = surface->w;
 	if (height < surface->h) height = surface->h;
-	SDL_FreeSurface(surface);
+	SDL_DestroySurface(surface);
     } else {
 	error("Failed to load button image %s", imagePath);
     }
@@ -4097,7 +4097,7 @@ GLWidget *Init_ImageButtonWidget(const char *text,
 	info->imageDown = SDL_GL_LoadTexture(surface, &(info->txcDown));
 	if (width < surface->w) width = surface->w;
 	if (height < surface->h) height = surface->h;
-	SDL_FreeSurface(surface);
+	SDL_DestroySurface(surface);
     } else {
 	error("Failed to load button image %s", imagePath);
     }

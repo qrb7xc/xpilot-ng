@@ -114,7 +114,7 @@ static void Radar_paint_block(GLWidget *radar, SDL_Surface *s, int xi, int yi, c
     block.w = (xi + 1) * radar->bounds.w / Setup->x - block.x;
     block.h = radar->bounds.h - yi * radar->bounds.h / Setup->y - block.y;
 
-    SDL_FillRect(s, &block, RGBA(color));
+    SDL_FillSurfaceRect(s, &block, RGBA(color));
 }
 
 /*
@@ -152,7 +152,7 @@ static void Radar_paint_world_blocks(GLWidget *radar, SDL_Surface *s)
     }
 
     if (SDL_MUSTLOCK(s)) SDL_LockSurface(s);
-    SDL_FillRect(s, NULL, RGBA(bgRadarColorValue));
+    SDL_FillSurfaceRect(s, NULL, RGBA(bgRadarColorValue));
 
     /* Scan the map and paint the blocks */
     for (xi = 0; xi < Setup->x; xi++) {
@@ -199,7 +199,7 @@ static void Radar_paint_world_polygons(GLWidget *radar, SDL_Surface *s)
     color_t color;
 
     if (SDL_MUSTLOCK(s)) SDL_LockSurface(s);
-    SDL_FillRect(s, NULL, RGBA(bgRadarColorValue));
+    SDL_FillSurfaceRect(s, NULL, RGBA(bgRadarColorValue));
 
     for (i = 0; i < num_polygons; i++) {
 
@@ -427,7 +427,7 @@ GLWidget *Init_RadarWidget(void)
 static void Radar_cleanup( GLWidget *widget )
 {
     glDeleteTextures(1, &radar_texture);
-    SDL_FreeSurface(radar_surface);
+    SDL_DestroySurface(radar_surface);
 }
 
 static void Radar_set_bounds(GLWidget *widget, int x, int y, int w, int h)

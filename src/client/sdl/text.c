@@ -136,7 +136,7 @@ GLuint SDL_GL_LoadTexture(SDL_Surface *surface, texcoord_t *texcoord)
     		 GL_RGBA,
     		 GL_UNSIGNED_BYTE,
     		 image->pixels);
-    SDL_FreeSurface(image); /* No longer needed */
+    SDL_DestroySurface(image); /* No longer needed */
 
     return texture;
 }
@@ -193,7 +193,7 @@ int FTinit(font_data *font, const char * fontname, int ptsize)
     	    height = glyph->h;
     	    TTF_GlyphMetrics( font->ttffont, i, &minx,&maxx,&miny,&maxy,NULL);
    	}    
-    	SDL_FreeSurface(glyph);
+    	SDL_DestroySurface(glyph);
 		
     	glNewList(font->list_base+i,GL_COMPILE);
 
@@ -398,7 +398,7 @@ bool render_text(font_data *ft_font, const char *text, string_tex_t *string_tex)
     	    src.h = dest.h = string_glyph->h;
 	    
     	    glyph = SDL_CreateRGBSurface(0,dest.w,dest.h,32,0,0,0,0);
-    	    SDL_SetColorKey(glyph, SDL_TRUE, 0x00000000);
+    	    SDL_SetSurfaceColorKey(glyph, true, 0x00000000);
     	    SDL_BlitSurface(string_glyph,&src,glyph,&dest);
     
   	    glGetError();
@@ -409,11 +409,11 @@ bool render_text(font_data *ft_font, const char *text, string_tex_t *string_tex)
     	    tex.width = dest.w;
 	    string_tex->width += dest.w;
 	    
-    	    SDL_FreeSurface(glyph);
+    	    SDL_DestroySurface(glyph);
 	    
 	    Arraylist_add(string_tex->tex_list,&tex);
 	}
-	SDL_FreeSurface(string_glyph);
+	SDL_DestroySurface(string_glyph);
     } else {
     	printf("TTF_RenderText_Blended failed for [%s]\n",text);
 	return false;

@@ -31,7 +31,7 @@ void command_handler(ConsoleInformation *, char *);
 
 static void Console_refresh(void)
 {
-    SDL_FillRect(console_window.surface, NULL, 0);
+    SDL_FillSurfaceRect(console_window.surface, NULL, 0);
     CON_UpdateConsole(console);
     CON_DrawConsole(console);
     sdl_window_refresh(&console_window);

@@ -93,8 +93,8 @@ int DT_LoadFont(const char *BitmapName, int flags) {
     	if (SDL_GetCurrentDisplayMode(0, &dmode) < 0) {
 	    return -1;
     	}
-	(*CurrentFont)->FontSurface = SDL_ConvertSurfaceFormat(Temp, dmode.format, 0);
-	SDL_FreeSurface(Temp);
+	(*CurrentFont)->FontSurface = SDL_ConvertSurface(Temp, dmode.format, 0);
+	SDL_DestroySurface(Temp);
 
 	(*CurrentFont)->CharWidth = (*CurrentFont)->FontSurface->w / 256;
 	(*CurrentFont)->CharHeight = (*CurrentFont)->FontSurface->h;
@@ -107,7 +107,7 @@ int DT_LoadFont(const char *BitmapName, int flags) {
 	 * as transparent.
 	 */
 	if(flags & TRANS_FONT) {
-	    SDL_SetColorKey((*CurrentFont)->FontSurface, SDL_TRUE, SDL_MapRGB((*CurrentFont)->FontSurface->format, 255, 0, 255));
+	    SDL_SetSurfaceColorKey((*CurrentFont)->FontSurface, true, SDL_MapRGB((*CurrentFont)->FontSurface->format, 255, 0, 255));
 	}
 	return FontNumber;
 }
@@ -204,7 +204,7 @@ void DT_DestroyDrawText(void) {
 		temp = CurrentFont;
 		CurrentFont = CurrentFont->NextFont;
 
-		SDL_FreeSurface(temp->FontSurface);
+		SDL_DestroySurface(temp->FontSurface);
 		free(temp);
 	}
 

@@ -362,7 +362,7 @@ void Paint_score_start(void)
 	fg.g = (scoreColorRGBA >> 16) & 255;
 	fg.b = (scoreColorRGBA >> 8) & 255;
 	fg.a = scoreColorRGBA & 255;
-    SDL_FillRect(scoreListWin.surface, NULL, 0);
+    SDL_FillSurfaceRect(scoreListWin.surface, NULL, 0);
     header = TTF_RenderText_Blended(scoreListFont, headingStr, fg);
     if (header == NULL) {
 	error("scorelist header rendering failed: %s", SDL_GetError());
@@ -377,7 +377,7 @@ void Paint_score_start(void)
 	     scoreListWin.w - SCORE_BORDER,
 	     scoreEntryRect.y + header->h + 2,
 	     0, 128, 0, 255);
-    SDL_FreeSurface(header);
+    SDL_DestroySurface(header);
 }
 
 void Paint_score_entry(int entry_num, other_t *other, bool is_team)
@@ -517,6 +517,6 @@ void Paint_score_entry(int entry_num, other_t *other, bool is_team)
 		 fg.r, fg.g, fg.b, 255);
     }
 
-    SDL_FreeSurface(line);
+    SDL_DestroySurface(line);
 }
 
