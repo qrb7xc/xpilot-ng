@@ -48,15 +48,15 @@
 #ifdef MACOSX_FRAMEWORKS
 # include <OpenGL/gl.h>
 # include <OpenGL/glu.h>
-# include <SDL2/SDL.h>
-# include <SDL2/SDL_events.h>
-# include <SDL2/SDL_video.h>
-# include <SDL2/SDL_version.h>
-# include <SDL2/SDL_syswm.h>
+# include <SDL3/SDL.h>
+# include <SDL3/SDL_events.h>
+# include <SDL3/SDL_video.h>
+# include <SDL3/SDL_version.h>
+//# include <SDL3/SDL_syswm.h> // header was removed
 # ifdef HAVE_SDL_IMAGE
-#  include <SDL2_image/SDL_image.h>
+#  include <SDL3_image/SDL_image.h>
 # endif
-# include <SDL2_ttf/SDL_ttf.h>
+# include <SDL3_ttf/SDL_ttf.h>
 #endif
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
