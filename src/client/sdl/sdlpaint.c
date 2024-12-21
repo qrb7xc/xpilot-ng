@@ -57,10 +57,10 @@ GLWidget *MainWidget = NULL;
 
 extern SDL_Window  *mainWindow;
 
-static void Scorelist_button(Uint8 button, Uint8 state, Uint16 x, Uint16 y, void *data)
+static void Scorelist_button(Uint8 button, bool down, Uint16 x, Uint16 y, void *data)
 {
     GLWidget *widget = (GLWidget *)data;
-    if (state == SDL_PRESSED) {
+    if (down) {
     	if (button == 1) {
 	    scoreListMoving = true;
     	    if (DelGLWidgetListItem( widget->list, widget ))
@@ -72,7 +72,7 @@ static void Scorelist_button(Uint8 button, Uint8 state, Uint16 x, Uint16 y, void
 	}
     }
     
-    if (state == SDL_RELEASED) {
+    if (!down) {
     	if (button == 1)
 	    scoreListMoving = false;
     }
@@ -167,10 +167,10 @@ GLWidget *Init_ScorelistWidget(void)
 	free(tmp);
 	return NULL;
     }
-    tmp->Draw	    	= Scorelist_paint;
-    tmp->Close	    	= Scorelist_cleanup;
+    tmp->Draw	    = Scorelist_paint;
+    tmp->Close	    = Scorelist_cleanup;
     tmp->button     	= Scorelist_button;
-    tmp->SetBounds     	= SetBounds_ScoreList;
+    tmp->SetBounds  = SetBounds_ScoreList;
     tmp->buttondata 	= tmp;
     tmp->motion     	= Scorelist_move;
     tmp->motiondata 	= tmp;

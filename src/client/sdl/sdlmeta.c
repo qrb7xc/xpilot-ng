@@ -608,14 +608,14 @@ static void SetBounds_MetaRowWidget(GLWidget *row, SDL_Rect *rb)
     SetBounds_GLWidget(col, &cb);
 }
 
-static void Button_MetaRowWidget(Uint8 button, Uint8 state, Uint16 x, 
+static void Button_MetaRowWidget(Uint8 button, bool down, Uint16 x,
 				 Uint16 y, void *data)
 {
     GLWidget *widget;
     MetaRowWidget *row;
     SDL_Event evt;
 
-    if (state != SDL_PRESSED) return;
+    if (!down) return;
     if (button != 1) return;
 
     widget = (GLWidget*)data;
@@ -1231,7 +1231,7 @@ int Meta_window(Connect_param_t *conpar)
 		target = FindGLWidgeti(meta, evt.button.x, evt.button.y);
 		if (target && target->button)
 		    target->button(evt.button.button, 
-				   evt.button.state,
+				   evt.button.down,
 				   evt.button.x,
 				   evt.button.y,
 				   target->buttondata);
@@ -1240,7 +1240,7 @@ int Meta_window(Connect_param_t *conpar)
 	    case SDL_EVENT_MOUSE_BUTTON_UP:
 		if (target && target->button) {
 		    target->button(evt.button.button, 
-				   evt.button.state,
+				   evt.button.down,
 				   evt.button.x,
 				   evt.button.y,
 				   target->buttondata);
@@ -1257,8 +1257,6 @@ int Meta_window(Connect_param_t *conpar)
 				   target->motiondata);
 		break;
 
-	    case SDL_WINDOWEVENT:
-	    	switch (evt.window.event) {
 	    case SDL_EVENT_WINDOW_EXPOSED:
 		glDisable(GL_SCISSOR_TEST);
 		set_alphacolor(blackRGBA);
@@ -1270,7 +1268,6 @@ int Meta_window(Connect_param_t *conpar)
 		glEnd();
 		glEnable(GL_SCISSOR_TEST);
 		break;
-		}
 	    }
 	} while (SDL_PollEvent(&evt));
     }	

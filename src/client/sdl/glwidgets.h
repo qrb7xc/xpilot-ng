@@ -48,7 +48,7 @@ struct glwidget_struct {
     void    	    (*Close)( GLWidget *widget );
     void    	    (*SetBounds)( GLWidget *widget, SDL_Rect *b );
     
-    void    	    (*button)( Uint8 button, Uint8 state , Uint16 x , Uint16 y, void *data );
+    void    	    (*button)( Uint8 button, bool down , Uint16 x , Uint16 y, void *data );
     void    	    *buttondata;
     void    	    (*motion)( Sint16 xrel, Sint16 yrel, Uint16 x, Uint16 y, void *data );
     void    	    *motiondata;
@@ -480,7 +480,7 @@ GLWidget *Init_ConfMenuWidget( Uint16 x, Uint16 y );
 typedef struct {
     Uint32 fg;
     Uint32 bg;
-    Uint8 state;
+    bool down;
     string_tex_t tex;
     GLuint imageUp;
     GLuint imageDown;

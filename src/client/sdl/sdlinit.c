@@ -90,29 +90,26 @@ int Init_playing_windows(void)
 
 static bool find_size(int *w, int *h)
 {
-    SDL_DisplayMode mode;
     int i, d, best_i, best_d;
 
     int displayIndex = 0;
-    int count = SDL_GetNumDisplayModes(displayIndex);
-    
+    int count;
+    SDL_DisplayMode **modes = SDL_GetFullscreenDisplayModes(SDL_GetPrimaryDisplay(), &count);
+
     best_i = 0;
     best_d = INT_MAX;
     for (i = 0; i < count; i++) {
-	if (SDL_GetDisplayMode(displayIndex, i, &mode) != 0) {
-	    error("SDL_GetDisplayMode failed: %s", SDL_GetError());
-	    return false;
-	}
-	d = (mode.w - *w) * (mode.w - *w) + (mode.h - *h) * (mode.h - *h);
-	if (d < best_d) {
-	    best_d = d;
-	    best_i = i;
-	}
+		SDL_DisplayMode *mode = modes[i];
+		d = (mode->w - *w) * (mode->w - *w) + (mode->h - *h) * (mode->h - *h);
+		if (d < best_d) {
+			best_d = d;
+			best_i = i;
+		}
     }
-    
-    SDL_GetDisplayMode(displayIndex, i, &mode);
-    *w = mode.w;
-    *h = mode.h;
+
+    SDL_DisplayMode *best_mode = modes[best_i];
+    *w = best_mode->w;
+    *h = best_mode->h;
     return true;
 }
 
@@ -122,18 +119,19 @@ int Init_window(void)
     char *defaultfontname = conf_font_file_string;
     bool gf_exists = true,df_exists = true,gf_init = false, mf_init = false;
     
-    if (TTF_Init()) {
-    	error("SDL_ttf initialization failed: %s", SDL_GetError());
-    	return -1;
-    }
     warn("SDL_ttf initialized.\n");
 
-    Conf_print();
-
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+    if (!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO)) {
         error("failed to initialize SDL: %s", SDL_GetError());
         return -1;
     }
+
+    if (!TTF_Init()) {
+    	error("SDL_ttf initialization failed: %s", SDL_GetError());
+    	return -1;
+    }
+
+    Conf_print();
 
     atexit(SDL_Quit);
 
@@ -149,15 +147,12 @@ int Init_window(void)
 
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-/* TODO
-    if (windowFlags & SDL_WINDOW_FULLSCREEN)
-      if (!find_size((int*)&draw_width, (int*)&draw_height))
-      	windowFlags ^= SDL_WINDOW_FULLSCREEN;
-*/
+    if (windowFlags & SDL_WINDOW_FULLSCREEN) {
+		draw_width = 0;
+		draw_height = 0;
+	}
 
     if ((mainWindow = SDL_CreateWindow(TITLE,
-    		 SDL_WINDOWPOS_UNDEFINED,
-			 SDL_WINDOWPOS_UNDEFINED,
     		 draw_width,
 			 draw_height,
  			 windowFlags )) == NULL) {

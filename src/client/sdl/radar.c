@@ -25,7 +25,6 @@
 #include "SDL_gfxPrimitives.h"
 #include "radar.h"
 #include "glwidgets.h"
-#include "sdl2compat.h"
 
 /* kps - had to add prefix so that these would not conflict with options */
 color_t wallRadarColorValue = 0xa0;
@@ -338,10 +337,10 @@ static void move(Sint16 xrel,Sint16 yrel,Uint16 x,Uint16 y, void *data)
     Set_string_option(Find_option("radarGeometry"), buf, xp_option_origin_config);
 }
 
-static void button( Uint8 button, Uint8 state , Uint16 x , Uint16 y, void *data )
+static void button( Uint8 button, bool down , Uint16 x , Uint16 y, void *data )
 {
     GLWidget *widget = (GLWidget *)data;
-    if (state == SDL_PRESSED) {
+    if (down) {
     	if (button == 1) {
     	    if (DelGLWidgetListItem( widget->list, widget ))
 	    	AppendGLWidgetList( widget->list, widget );
@@ -372,11 +371,10 @@ static void Radar_init_texture(GLWidget *widget)
 
 static int Radar_init(GLWidget *widget)
 {
-    radar_surface =
-	SDL_CreateRGBSurface(SDL_SWSURFACE,
-						 pow2_ceil(widget->bounds.w-1),
-			     		 pow2_ceil(widget->bounds.h-1), 32,
-						 RMASK, GMASK, BMASK, AMASK);
+	radar_surface = SDL_CreateSurface(
+						pow2_ceil(widget->bounds.w-1),
+						pow2_ceil(widget->bounds.h-1),
+						SDL_GetPixelFormatForMasks(32, RMASK, GMASK, BMASK, AMASK));
     if (!radar_surface) {
         error("Could not create radar surface: %s", SDL_GetError());
         return -1;

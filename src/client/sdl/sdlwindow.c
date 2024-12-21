@@ -22,7 +22,6 @@
 
 #include "sdlwindow.h"
 #include "error.h"
-#include "sdl2compat.h"
 
 static int next_p2(int t) 
 {
@@ -52,9 +51,8 @@ void sdl_window_move(sdl_window_t *win, int x, int y)
 int sdl_window_resize(sdl_window_t *win, int width, int height)
 {
     SDL_Surface *surface = 
-	SDL_CreateRGBSurface(SDL_SWSURFACE, 
-			     next_p2(width), next_p2(height), 
-			     32, RMASK, GMASK, BMASK, AMASK);
+	SDL_CreateSurface(next_p2(width), next_p2(height),
+			     SDL_GetPixelFormatForMasks(32, RMASK, GMASK, BMASK, AMASK));
     if (!surface) {
 	error("failed to create SDL surface: %s", SDL_GetError());
 	return -1;

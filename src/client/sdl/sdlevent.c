@@ -43,14 +43,19 @@ void Platform_specific_pointer_control_set_state(bool on)
 {
     assert(clData.pointerControl != on);
 
-    if (on) {
-    	MainWidget_ShowMenu(MainWidget, false);
-	SDL_SetRelativeMouseMode(true);
-    } else {
-    	MainWidget_ShowMenu(MainWidget, true);
-    	SDL_SetRelativeMouseMode(false);
+	int count;
+	SDL_Window **windows = SDL_GetWindows(&count);
+	if (count > 0)
+	{
+		if (on) {
+			MainWidget_ShowMenu(MainWidget, false);
+			SDL_SetWindowRelativeMouseMode(windows[0], true);
+		} else {
+			MainWidget_ShowMenu(MainWidget, true);
+			SDL_SetWindowRelativeMouseMode(windows[0], false);
+		}
     }
-    
+
 #ifdef HAVE_XF86MISC
     {
 	SDL_SysWMinfo info;
@@ -149,7 +154,7 @@ int Process_event(SDL_Event *evt)
 	if (!clData.pointerControl) {
 	    if ( (clicktarget[button-1] = FindGLWidget(MainWidget,evt->button.x,evt->button.y)) ) {
 	    	if (clicktarget[button-1]->button) {
-		    clicktarget[button-1]->button(button,evt->button.state,
+				clicktarget[button-1]->button(button,evt->button.down,
 		    	    	    	    evt->button.x,evt->button.y,
 					    clicktarget[button-1]->buttondata);
 		}
@@ -195,7 +200,7 @@ int Process_event(SDL_Event *evt)
 	} else {
 	    if ( clicktarget[button-1] ) {
 	    	if (clicktarget[button-1]->button) {
-		    clicktarget[button-1]->button(button,evt->button.state,
+				clicktarget[button-1]->button(button,evt->button.down,
 		    	    	    	    	evt->button.x,evt->button.y,
 						clicktarget[button-1]->buttondata);
 		}
@@ -204,12 +209,9 @@ int Process_event(SDL_Event *evt)
 	}
 	break;
 
-    case SDL_WINDOWEVENT:
-	switch (evt->window.event) {
-    	case SDL_EVENT_WINDOW_RESIZED:
-	    Resize_Window(evt->window.data1, evt->window.data2);
-	    break;
-	}
+	case SDL_EVENT_WINDOW_RESIZED:
+	Resize_Window(evt->window.data1, evt->window.data2);
+	break;
 
     default:
       break;

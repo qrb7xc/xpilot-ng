@@ -462,16 +462,16 @@ void load_textscrap(char *text)
 /**********************/
 /* Begin:  ArrowWidget*/
 /**********************/
-static void button_ArrowWidget( Uint8 button, Uint8 state, Uint16 x, Uint16 y, void *data );
+static void button_ArrowWidget( Uint8 button, bool down, Uint16 x, Uint16 y, void *data );
 static void Paint_ArrowWidget( GLWidget *widget );
 
-static void button_ArrowWidget( Uint8 button, Uint8 state, Uint16 x, Uint16 y, void *data )
+static void button_ArrowWidget( Uint8 button, bool down, Uint16 x, Uint16 y, void *data )
 {
     ArrowWidget *tmp;
     
     if (!data) return;
     tmp = (ArrowWidget *)(((GLWidget *)data)->wid_info);
-    if (state == SDL_PRESSED && !(tmp->locked)) {
+    if (down && !(tmp->locked)) {
 	if (button == 1) {
     	    tmp->press = true;
 	}
@@ -480,7 +480,7 @@ static void button_ArrowWidget( Uint8 button, Uint8 state, Uint16 x, Uint16 y, v
 	    if (tmp->action) tmp->action(tmp->actiondata);
 	}
     }
-    if (state == SDL_RELEASED) {
+    if (!down) {
 	if (button == 1) {
     	    tmp->press = false;
 	}
@@ -588,16 +588,16 @@ GLWidget *Init_ArrowWidget( ArrowWidget_dir_t direction,int width, int height,
 /**********************/
 /* Begin:  ButtonWidget*/
 /**********************/
-static void button_ButtonWidget( Uint8 button, Uint8 state, Uint16 x, Uint16 y, void *data );
+static void button_ButtonWidget( Uint8 button, bool down, Uint16 x, Uint16 y, void *data );
 static void Paint_ButtonWidget( GLWidget *widget );
 
-static void button_ButtonWidget( Uint8 button, Uint8 state, Uint16 x, Uint16 y, void *data )
+static void button_ButtonWidget( Uint8 button, bool down, Uint16 x, Uint16 y, void *data )
 {
     ButtonWidget *tmp;
     
     if (!data) return;
     tmp = (ButtonWidget *)(((GLWidget *)data)->wid_info);
-    if (state == SDL_PRESSED) {
+    if (down) {
     	if (tmp->pressed) return;
 	if (button == 1) {
     	    tmp->pressed = true;
@@ -674,22 +674,22 @@ GLWidget *Init_ButtonWidget( Uint32 *normal_color, Uint32 *pressed_color, Uint8 
 /**********************/
 /* Begin: SlideWidget*/
 /**********************/
-static void button_SlideWidget( Uint8 button, Uint8 state, Uint16 x, Uint16 y, void *data );
+static void button_SlideWidget( Uint8 button, bool down, Uint16 x, Uint16 y, void *data );
 static void Paint_SlideWidget( GLWidget *widget );
 
-static void button_SlideWidget( Uint8 button, Uint8 state, Uint16 x, Uint16 y, void *data )
+static void button_SlideWidget( Uint8 button, bool down, Uint16 x, Uint16 y, void *data )
 {
     SlideWidget *tmp;
     
     if (!data) return;
 
     tmp = (SlideWidget *)(((GLWidget *)data)->wid_info);
-    if (state == SDL_PRESSED && !(tmp->sliding)) {
+    if (!down && !(tmp->sliding)) {
 	if (button == 1) {
     	    tmp->sliding = true;
 	}
     }
-    if (state == SDL_RELEASED) {
+    if (!down) {
 	if (button == 1) {
     	    tmp->sliding = false;
 	    if (tmp->release) tmp->release(tmp->releasedata);
@@ -987,13 +987,13 @@ GLWidget *Init_ScrollbarWidget( bool locked, GLfloat pos, GLfloat size, ScrollWi
 static void Paint_LabelWidget( GLWidget *widget );
 static void Close_LabelWidget ( GLWidget *widget );
 
-static void button_LabelWidget( Uint8 button, Uint8 state, Uint16 x, Uint16 y, void *data )
+static void button_LabelWidget( Uint8 button, bool down, Uint16 x, Uint16 y, void *data )
 {
     LabelWidget *tmp;
     
     if (!data) return;
     tmp = (LabelWidget *)(((GLWidget *)data)->wid_info);
-    if (state == SDL_PRESSED) {
+    if (down) {
 	if (button == 1) {
 	    if ((tmp->tex).text) {
 	    	load_textscrap((tmp->tex).text);
@@ -1138,15 +1138,15 @@ GLWidget *Init_LabelWidget( const char *text , Uint32 *fgcolor, Uint32 *bgcolor,
 /***********************************/
 /* Begin:  LabeledRadiobuttonWidget*/
 /***********************************/
-static void button_LabeledRadiobuttonWidget( Uint8 button, Uint8 state, Uint16 x, Uint16 y, void *data );
+static void button_LabeledRadiobuttonWidget( Uint8 button, bool down, Uint16 x, Uint16 y, void *data );
 static void Paint_LabeledRadiobuttonWidget( GLWidget *widget );
 
-static void button_LabeledRadiobuttonWidget( Uint8 button, Uint8 state, Uint16 x, Uint16 y, void *data )
+static void button_LabeledRadiobuttonWidget( Uint8 button, bool down, Uint16 x, Uint16 y, void *data )
 {
     LabeledRadiobuttonWidget *tmp;
     if (!data) return;
     tmp = (LabeledRadiobuttonWidget *)(((GLWidget *)data)->wid_info);
-    if (state == SDL_PRESSED) {
+    if (down) {
 	if (button == 1) {
 	    /* Toggle state, and call (*action)*/
 	    tmp->state = !(tmp->state);
@@ -3187,7 +3187,7 @@ GLWidget *Init_ScrollPaneWidget( GLWidget *content )
 /* Begin: MainWidget  */
 /**********************/
 static void SetBounds_MainWidget( GLWidget *widget, SDL_Rect *b );
-static void button_MainWidget( Uint8 button, Uint8 state , Uint16 x , Uint16 y, void *data );
+static void button_MainWidget( Uint8 button, bool down , Uint16 x , Uint16 y, void *data );
 static void Close_MainWidget( GLWidget *widget );
 
 void MainWidget_ShowMenu( GLWidget *widget, bool show )
@@ -3288,13 +3288,13 @@ static void SetBounds_MainWidget( GLWidget *widget, SDL_Rect *b )
 
 extern int Console_isVisible(void);
 extern void Paste_String_to_Console(char *text);
-static void button_MainWidget( Uint8 button, Uint8 state , Uint16 x , Uint16 y, void *data )
+static void button_MainWidget( Uint8 button, bool down , Uint16 x , Uint16 y, void *data )
 {
     int scraplen;
     
     if (!data) return;
 
-    if (state == SDL_PRESSED) {
+    if (down) {
 	if (button == 1) {
 	    Key_press(KEY_POINTER_CONTROL);
 	}
@@ -3938,7 +3938,7 @@ GLWidget *Init_ConfMenuWidget( Uint16 x, Uint16 y )
 /* Begin: ImageButtonWidget */
 /****************************/
 
-static void Button_ImageButtonWidget(Uint8 button, Uint8 state, Uint16 x, 
+static void Button_ImageButtonWidget(Uint8 button, bool down, Uint16 x, 
 			      Uint16 y, void *data)
 {
     GLWidget *widget;
@@ -3950,10 +3950,10 @@ static void Button_ImageButtonWidget(Uint8 button, Uint8 state, Uint16 x,
 	return;
     }
     info = (ImageButtonWidget*)widget->wid_info;
-    if (info->state == state) return;
-    info->state = state;
+    if (info->down == down) return;
+    info->down = down;
 
-    if (state != SDL_PRESSED && info->onClick) {
+    if (!down && info->onClick) {
 	if (x >= widget->bounds.x
 	    && x <= widget->bounds.x + widget->bounds.w
 	    && y >= widget->bounds.y
@@ -3988,7 +3988,7 @@ static void Paint_ImageButtonWidget(GLWidget *widget)
     b = &(widget->bounds);
     info = (ImageButtonWidget*)(widget->wid_info);
 
-    if (info->state != SDL_PRESSED) {
+    if (!info->down) {
 	if (info->imageUp) {
 	    set_alphacolor(info->bg);
 	    glBindTexture(GL_TEXTURE_2D, info->imageUp);
@@ -4025,7 +4025,7 @@ static void Paint_ImageButtonWidget(GLWidget *widget)
     x = widget->bounds.x + widget->bounds.w / 2;
     y = widget->bounds.y + widget->bounds.h / 2;
     c = (int)(info->fg ? info->fg : whiteRGBA);
-    if (info->state == SDL_PRESSED) {
+    if (info->down) {
 	x += 1;
 	y += 1;
     }
@@ -4067,7 +4067,7 @@ GLWidget *Init_ImageButtonWidget(const char *text,
     info->onClick = onClick;
     info->fg = fg;
     info->bg = bg;
-    info->state = SDL_RELEASED;
+    info->down = false;
     info->imageUp = 0;
     info->imageDown = 0;
 

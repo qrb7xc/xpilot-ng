@@ -52,7 +52,7 @@ SDL_Event *CON_Events(SDL_Event * event)
 	return event;
 
     if (event->type == SDL_EVENT_KEY_DOWN) {
-	if (event->key.mod & KMOD_CTRL) {
+	if (event->key.mod & SDL_KMOD_CTRL) {
 	    /* CTRL pressed */
 	    /* kps - please modify this to work like in talk.c */
 	    switch (event->key.key) {
@@ -84,14 +84,14 @@ SDL_Event *CON_Events(SDL_Event * event)
 		return event;
 	    }
 #if 0
-	} else if (event->key.mod & KMOD_ALT) {
+	} else if (event->key.mod & SDL_KMOD_ALT) {
 	    /* the console does not handle ALT combinations! */
 	    return event;
 #endif
 	} else {
 	    switch (event->key.key) {
 	    case SDLK_HOME:
-		if (event->key.mod & KMOD_SHIFT) {
+		if (event->key.mod & SDL_KMOD_SHIFT) {
 		    Topmost->ConsoleScrollBack = Topmost->LineBuffer - 1;
 		    CON_UpdateConsole(Topmost);
 		} else {
@@ -99,7 +99,7 @@ SDL_Event *CON_Events(SDL_Event * event)
 		}
 		break;
 	    case SDLK_END:
-		if (event->key.mod & KMOD_SHIFT) {
+		if (event->key.mod & SDL_KMOD_SHIFT) {
 		    Topmost->ConsoleScrollBack = 0;
 		    CON_UpdateConsole(Topmost);
 		} else {
@@ -216,7 +216,7 @@ void CON_UpdateConsole(ConsoleInformation * console)
 
 
     SDL_FillSurfaceRect(console->ConsoleSurface, NULL,
-		 SDL_MapRGBA(console->ConsoleSurface->format, 0, 20, 0,
+		 SDL_MapSurfaceRGBA(console->ConsoleSurface, 0, 20, 0,
 			     SDL_ALPHA_OPAQUE));
 
     /* draw the background image if there is one */
@@ -311,7 +311,7 @@ void CON_DrawConsole(ConsoleInformation * console)
     DestRect.h = console->RaiseOffset;
 
     SDL_FillSurfaceRect(console->OutputScreen, &DestRect,
-		 SDL_MapRGBA(console->ConsoleSurface->format,
+		 SDL_MapSurfaceRGBA(console->ConsoleSurface,
 			     255, 255, 255, console->ConsoleAlpha));
     SDL_BlitSurface(console->ConsoleSurface, &SrcRect,
 		    console->OutputScreen, &DestRect);
@@ -383,13 +383,14 @@ ConsoleInformation *CON_Init(const char *FontName,
 	newinfo->DispY = rect.y;
 
     /* load the console surface */
-    Temp = SDL_CreateRGBSurface(SDL_SWSURFACE, rect.w, rect.h,
-				newinfo->OutputScreen->format->
-				BitsPerPixel,
-				newinfo->OutputScreen->format->Rmask,
-				newinfo->OutputScreen->format->Gmask,
-				newinfo->OutputScreen->format->Bmask,
-				newinfo->OutputScreen->format->Amask);
+    const SDL_PixelFormatDetails *details = SDL_GetPixelFormatDetails(newinfo->OutputScreen->format);
+    Temp = SDL_CreateSurface(rect.w, rect.h,
+				SDL_GetPixelFormatForMasks(
+					details->bits_per_pixel,
+					details->Rmask,
+					details->Gmask,
+					details->Bmask,
+					details->Amask));
     if (Temp == NULL) {
 	PRINT_ERROR("Couldn't create the ConsoleSurface\n");
 	return NULL;
@@ -397,17 +398,17 @@ ConsoleInformation *CON_Init(const char *FontName,
     newinfo->ConsoleSurface = Temp;	/* SDL_DisplayFormat(Temp); */
     /* SDL_DestroySurface(Temp); */
     SDL_FillSurfaceRect(newinfo->ConsoleSurface, NULL,
-		 SDL_MapRGBA(newinfo->ConsoleSurface->format, 0, 20, 0,
+		 SDL_MapSurfaceRGBA(newinfo->ConsoleSurface, 0, 20, 0,
 			     newinfo->ConsoleAlpha));
 
     /* Load the dirty rectangle for user input */
-    Temp = SDL_CreateRGBSurface(SDL_SWSURFACE, rect.w, newinfo->FontHeight,
-				newinfo->OutputScreen->format->
-				BitsPerPixel,
-				newinfo->OutputScreen->format->Rmask,
-				newinfo->OutputScreen->format->Gmask,
-				newinfo->OutputScreen->format->Bmask,
-				newinfo->OutputScreen->format->Amask);
+    Temp = SDL_CreateSurface(rect.w, newinfo->FontHeight,
+				SDL_GetPixelFormatForMasks(
+					details->bits_per_pixel,
+					details->Rmask,
+					details->Gmask,
+					details->Bmask,
+					details->Amask));
     if (Temp == NULL) {
 	PRINT_ERROR("Couldn't create the InputBackground\n");
 	return NULL;
@@ -415,7 +416,7 @@ ConsoleInformation *CON_Init(const char *FontName,
     newinfo->InputBackground = Temp;	/* SDL_DisplayFormat(Temp); */
     /* SDL_DestroySurface(Temp); */
     SDL_FillSurfaceRect(newinfo->InputBackground, NULL,
-		 SDL_MapRGBA(newinfo->ConsoleSurface->format, 0, 20, 0,
+		 SDL_MapSurfaceRGBA(newinfo->ConsoleSurface, 0, 20, 0,
 			     SDL_ALPHA_OPAQUE));
 
     /* calculate the number of visible characters in the command line */
@@ -695,7 +696,6 @@ int CON_Background(ConsoleInformation * console, const char *image, int x,
 {
     SDL_Surface *temp;
     SDL_Rect backgroundsrc, backgrounddest;
-    SDL_DisplayMode dmode;
 
     if (!console)
 	return 1;
@@ -706,7 +706,7 @@ int CON_Background(ConsoleInformation * console, const char *image, int x,
 	    SDL_DestroySurface(console->BackgroundImage);
 	console->BackgroundImage = NULL;
 	SDL_FillSurfaceRect(console->InputBackground, NULL,
-		     SDL_MapRGBA(console->ConsoleSurface->format, 0, 0, 0,
+		     SDL_MapSurfaceRGBA(console->ConsoleSurface, 0, 0, 0,
 				 SDL_ALPHA_OPAQUE));
 	return 0;
     }
@@ -722,10 +722,11 @@ int CON_Background(ConsoleInformation * console, const char *image, int x,
 	return 1;
     }
 
-    if (SDL_GetCurrentDisplayMode(0, &dmode) < 0) {
-    	return 1;
-    }
-    console->BackgroundImage = SDL_ConvertSurface(temp, dmode.format, 0);
+	const SDL_DisplayMode* dmode = SDL_GetCurrentDisplayMode(SDL_GetPrimaryDisplay());
+	if (dmode == NULL) {
+	    return -1;
+	}
+    console->BackgroundImage = SDL_ConvertSurface(temp, dmode->format);
     SDL_DestroySurface(temp);
     console->BackX = x;
     console->BackY = y;
@@ -742,7 +743,7 @@ int CON_Background(ConsoleInformation * console, const char *image, int x,
     backgrounddest.h = console->FontHeight;
 
     SDL_FillSurfaceRect(console->InputBackground, NULL,
-		 SDL_MapRGBA(console->ConsoleSurface->format, 0, 0, 0,
+		 SDL_MapSurfaceRGBA(console->ConsoleSurface, 0, 0, 0,
 			     SDL_ALPHA_OPAQUE));
     SDL_BlitSurface(console->BackgroundImage, &backgroundsrc,
 		    console->InputBackground, &backgrounddest);
@@ -774,7 +775,6 @@ int CON_Resize(ConsoleInformation * console, SDL_Rect rect)
 {
     SDL_Surface *Temp;
     SDL_Rect backgroundsrc, backgrounddest;
-    SDL_DisplayMode dmode;
 
     if (!console)
 	return 1;
@@ -796,32 +796,34 @@ int CON_Resize(ConsoleInformation * console, SDL_Rect rect)
 
     /* load the console surface */
     SDL_DestroySurface(console->ConsoleSurface);
-    Temp =
-	SDL_CreateRGBSurface(SDL_SWSURFACE, rect.w, rect.h,
-			     console->OutputScreen->format->BitsPerPixel,
-			     0, 0, 0, 0);
+    const SDL_PixelFormatDetails *details = SDL_GetPixelFormatDetails(console->OutputScreen);
+    Temp = SDL_CreateSurface(rect.w, rect.h,
+				SDL_GetPixelFormatForMasks(
+					details->bits_per_pixel,
+					0, 0, 0, 0));
     if (Temp == NULL) {
 	PRINT_ERROR("Couldn't create the console->ConsoleSurface\n");
 	return 1;
     }
 
-    if (SDL_GetCurrentDisplayMode(0, &dmode) < 0) {
-	return 1;
-    }
-    console->ConsoleSurface = SDL_ConvertSurface(Temp, dmode.format, 0);
+	const SDL_DisplayMode* dmode = SDL_GetCurrentDisplayMode(SDL_GetPrimaryDisplay());
+	if (dmode == NULL) {
+	    return -1;
+	}
+    console->ConsoleSurface = SDL_ConvertSurface(Temp, dmode->format);
     SDL_DestroySurface(Temp);
 
     /* Load the dirty rectangle for user input */
     SDL_DestroySurface(console->InputBackground);
-    Temp =
-	SDL_CreateRGBSurface(SDL_SWSURFACE, rect.w, console->FontHeight,
-			     console->OutputScreen->format->BitsPerPixel,
-			     0, 0, 0, 0);
+    Temp = SDL_CreateSurface(rect.w, console->FontHeight,
+				SDL_GetPixelFormatForMasks(
+					details->bits_per_pixel,
+					0, 0, 0, 0));
     if (Temp == NULL) {
 	PRINT_ERROR("Couldn't create the input background\n");
 	return 1;
     }
-    console->InputBackground = SDL_ConvertSurface(Temp, dmode.format, 0);
+    console->InputBackground = SDL_ConvertSurface(Temp, dmode->format);
     SDL_DestroySurface(Temp);
 
     /* Now reset some stuff dependent on the previous size */
@@ -842,7 +844,7 @@ int CON_Resize(ConsoleInformation * console, SDL_Rect rect)
 	backgrounddest.h = console->FontHeight;
 
 	SDL_FillSurfaceRect(console->InputBackground, NULL,
-		     SDL_MapRGBA(console->ConsoleSurface->format, 0, 0, 0,
+		     SDL_MapSurfaceRGBA(console->ConsoleSurface, 0, 0, 0,
 				 SDL_ALPHA_OPAQUE));
 	SDL_BlitSurface(console->BackgroundImage, &backgroundsrc,
 			console->InputBackground, &backgrounddest);

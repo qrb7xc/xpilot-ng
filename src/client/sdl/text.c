@@ -56,7 +56,6 @@
 #include "xpclient_sdl.h"
 
 #include "text.h"
-#include "sdl2compat.h"
 
 #define BUFSIZE 1024
 
@@ -93,15 +92,9 @@ GLuint SDL_GL_LoadTexture(SDL_Surface *surface, texcoord_t *texcoord)
     texcoord->MaxX = (GLfloat)surface->w / w;  /* Max X */
     texcoord->MaxY = (GLfloat)surface->h / h;  /* Max Y */
 
-    image = SDL_CreateRGBSurface(
-    		    SDL_SWSURFACE,
+    image = SDL_CreateSurface(
     		    w, h,
-    		    32,
-		    RMASK,
-		    GMASK,
-		    BMASK,
-		    AMASK
-    		   );
+    		    SDL_GetPixelFormatForMasks(32, RMASK, GMASK, BMASK, AMASK));
     if ( image == NULL ) {
     	    return 0;
     }
@@ -192,8 +185,8 @@ int FTinit(font_data *font, const char * fontname, int ptsize)
 	    
     	    font->W[i] = glyph->w;
     	    height = glyph->h;
-    	    TTF_GlyphMetrics( font->ttffont, i, &minx,&maxx,&miny,&maxy,NULL);
-   	}    
+    	    TTF_GetGlyphMetrics( font->ttffont, i, &minx,&maxx,&miny,&maxy,NULL);
+   	}
     	SDL_DestroySurface(glyph);
 		
     	glNewList(font->list_base+i,GL_COMPILE);
@@ -398,7 +391,7 @@ bool render_text(font_data *ft_font, const char *text, string_tex_t *string_tex)
 	    	dest.w = src.w = 254;
     	    src.h = dest.h = string_glyph->h;
 	    
-    	    glyph = SDL_CreateRGBSurface(0,dest.w,dest.h,32,0,0,0,0);
+    	    glyph = SDL_CreateSurface(dest.w,dest.h,SDL_GetPixelFormatForMasks(32,0,0,0,0));
     	    SDL_SetSurfaceColorKey(glyph, true, 0x00000000);
     	    SDL_BlitSurface(string_glyph,&src,glyph,&dest);
     
