@@ -1020,12 +1020,12 @@ static bool join_server(Connect_param_t *conpar, server_info_t *sip)
     return false;
 }
 
-static void handleKeyPress(GLWidget *meta, SDL_Keysym *keysym )
+static void handleKeyPress(GLWidget *meta, SDL_Keycode key )
 {
     /*static unsigned int row = 1;*/
     SDL_Event evt;
     
-    switch ( keysym->sym )
+    switch ( key )
     {
     case SDLK_ESCAPE:
 	/* ESC key was pressed */
@@ -1224,7 +1224,7 @@ int Meta_window(Connect_param_t *conpar)
 
 	    case SDL_EVENT_KEY_DOWN:
 	        /* handle key presses */
-	        handleKeyPress( meta, &evt.key.keysym );
+	        handleKeyPress( meta, evt.key.key );
 	        break;
 
 	    case SDL_EVENT_MOUSE_BUTTON_DOWN:

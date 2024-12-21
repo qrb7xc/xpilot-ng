@@ -56,6 +56,7 @@
 #include "xpclient_sdl.h"
 
 #include "text.h"
+#include "sdl2compat.h"
 
 #define BUFSIZE 1024
 
@@ -173,7 +174,7 @@ int FTinit(font_data *font, const char * fontname, int ptsize)
     TTF_SetFontStyle(font->ttffont, renderstyle);
     font->list_base=glGenLists(next_p2(NUMCHARS));
     /* Get the recommended spacing between lines of text for this font */
-    font->linespacing = TTF_FontLineSkip(font->ttffont);
+    font->linespacing = TTF_GetFontLineSkip(font->ttffont);
     font->h = ptsize;
 
     for( i = 0; i < NUMCHARS; i++ ) {
@@ -360,15 +361,15 @@ bool render_text(font_data *ft_font, const char *text, string_tex_t *string_tex)
 #else
     /* kps - fix for empty author field in cannon dodgers */
     if (!strlen(text))
-	text = " ";
+		text = " ";
 #endif
 
     forecol = &white;
 	
     string_tex->font_height = ft_font->h;
     
-    string_glyph = TTF_RenderText_Blended( ft_font->ttffont, text, *forecol );
-    
+    string_glyph = TTF_RenderText_Blended( ft_font->ttffont, text, strlen(text), *forecol );
+
     string_tex->tex_list = Arraylist_alloc(sizeof(tex_t));
 	
     string_tex->width = 0;

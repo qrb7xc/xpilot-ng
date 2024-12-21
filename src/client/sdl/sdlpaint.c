@@ -363,7 +363,7 @@ void Paint_score_start(void)
 	fg.b = (scoreColorRGBA >> 8) & 255;
 	fg.a = scoreColorRGBA & 255;
     SDL_FillSurfaceRect(scoreListWin.surface, NULL, 0);
-    header = TTF_RenderText_Blended(scoreListFont, headingStr, fg);
+	header = TTF_RenderText_Blended(scoreListFont, headingStr, strnlen(headingStr, MSG_LEN), fg);
     if (header == NULL) {
 	error("scorelist header rendering failed: %s", SDL_GetError());
 	return;
@@ -400,7 +400,7 @@ void Paint_score_entry(int entry_num, other_t *other, bool is_team)
 	teamStr[1] = ' ';
 	raceStr[2] = ' ';
 
-	lineSpacing = TTF_FontLineSkip(scoreListFont) + 1;
+	lineSpacing = TTF_GetFontLineSkip(scoreListFont) + 1;
 	/*
 	 * SDL_ttf 1.2 seems to have a broken TTF_FontLineSkip.
 	 * Enable workaround and print a warning.
@@ -496,7 +496,7 @@ void Paint_score_entry(int entry_num, other_t *other, bool is_team)
 	fg.g = (color >> 16) & 255;
 	fg.b = (color >> 8) & 255;
 	fg.a = color & 255;
-    line = TTF_RenderText_Blended(scoreListFont, label, fg);
+    line = TTF_RenderText_Blended(scoreListFont, label, strnlen(label, MSG_LEN), fg);
     if (line == NULL) {
 	error("scorelist rendering failed: %s", SDL_GetError());
 	return;

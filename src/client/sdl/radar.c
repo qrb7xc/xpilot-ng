@@ -25,6 +25,7 @@
 #include "SDL_gfxPrimitives.h"
 #include "radar.h"
 #include "glwidgets.h"
+#include "sdl2compat.h"
 
 /* kps - had to add prefix so that these would not conflict with options */
 color_t wallRadarColorValue = 0xa0;

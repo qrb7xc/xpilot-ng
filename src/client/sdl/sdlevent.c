@@ -135,13 +135,13 @@ int Process_event(SDL_Event *evt)
     case SDL_EVENT_KEY_DOWN:
 	if (Console_isVisible()) break;
 	if (evt->key.repeat == 0)
-	    Keyboard_button_pressed((xp_keysym_t)evt->key.keysym.sym);
+	    Keyboard_button_pressed((xp_keysym_t)evt->key.key);
 	break;
 	
     case SDL_EVENT_KEY_UP:
         /* letting release events through to prevent some keys from locking */
 	/*if (Console_isVisible()) break;*/
-	Keyboard_button_released((xp_keysym_t)evt->key.keysym.sym);
+	Keyboard_button_released((xp_keysym_t)evt->key.key);
 	break;
 	
     case SDL_EVENT_MOUSE_BUTTON_DOWN:

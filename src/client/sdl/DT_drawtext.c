@@ -66,7 +66,6 @@ int DT_LoadFont(const char *BitmapName, int flags) {
 	int FontNumber = 0;
 	BitFont **CurrentFont = &BitFonts;
 	SDL_Surface *Temp;
-	SDL_DisplayMode dmode;
 
 	while(*CurrentFont) {
 		CurrentFont = &((*CurrentFont)->NextFont);
@@ -90,10 +89,11 @@ int DT_LoadFont(const char *BitmapName, int flags) {
 	/* Add a font to the list */
 	*CurrentFont = (BitFont *) malloc(sizeof(BitFont));
 	
-    	if (SDL_GetCurrentDisplayMode(0, &dmode) < 0) {
+	const SDL_DisplayMode* dmode = SDL_GetCurrentDisplayMode(0);
+	if (dmode == NULL) {
 	    return -1;
     	}
-	(*CurrentFont)->FontSurface = SDL_ConvertSurface(Temp, dmode.format, 0);
+	(*CurrentFont)->FontSurface = SDL_ConvertSurface(Temp, dmode->format);
 	SDL_DestroySurface(Temp);
 
 	(*CurrentFont)->CharWidth = (*CurrentFont)->FontSurface->w / 256;

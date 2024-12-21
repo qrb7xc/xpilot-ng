@@ -52,10 +52,10 @@ SDL_Event *CON_Events(SDL_Event * event)
 	return event;
 
     if (event->type == SDL_EVENT_KEY_DOWN) {
-	if (event->key.keysym.mod & SDL_KMOD_CTRL) {
+	if (event->key.mod & KMOD_CTRL) {
 	    /* CTRL pressed */
 	    /* kps - please modify this to work like in talk.c */
-	    switch (event->key.keysym.sym) {
+	    switch (event->key.key) {
 	    case SDLK_A:
 		Cursor_Home(Topmost);
 		break;
@@ -84,14 +84,14 @@ SDL_Event *CON_Events(SDL_Event * event)
 		return event;
 	    }
 #if 0
-	} else if (event->key.keysym.mod & SDL_KMOD_ALT) {
+	} else if (event->key.mod & KMOD_ALT) {
 	    /* the console does not handle ALT combinations! */
 	    return event;
 #endif
 	} else {
-	    switch (event->key.keysym.sym) {
+	    switch (event->key.key) {
 	    case SDLK_HOME:
-		if (event->key.keysym.mod & SDL_KMOD_SHIFT) {
+		if (event->key.mod & KMOD_SHIFT) {
 		    Topmost->ConsoleScrollBack = Topmost->LineBuffer - 1;
 		    CON_UpdateConsole(Topmost);
 		} else {
@@ -99,7 +99,7 @@ SDL_Event *CON_Events(SDL_Event * event)
 		}
 		break;
 	    case SDLK_END:
-		if (event->key.keysym.mod & SDL_KMOD_SHIFT) {
+		if (event->key.mod & KMOD_SHIFT) {
 		    Topmost->ConsoleScrollBack = 0;
 		    CON_UpdateConsole(Topmost);
 		} else {
@@ -1069,10 +1069,10 @@ void Cursor_Add(ConsoleInformation * console, SDL_Event * event)
     /* Again: the commandline has to hold the command and the cursor (+1) */
     /* TODO: unicode */
     if (strlen(Topmost->Command) + 1 < CON_CHARS_PER_LINE
-	&& event->key.keysym.sym) {
+	&& event->key.key) {
 	Topmost->CursorPos++;
 	len = strlen(Topmost->LCommand);
-	Topmost->LCommand[len] = (char) event->key.keysym.sym;
+	Topmost->LCommand[len] = (char) event->key.key;
 	Topmost->LCommand[len + sizeof(char)] = '\0';
 	Assemble_Command(console);
     }

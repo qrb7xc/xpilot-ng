@@ -22,6 +22,7 @@
 
 #include "sdlwindow.h"
 #include "error.h"
+#include "sdl2compat.h"
 
 static int next_p2(int t) 
 {
