@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2003-2004 by
  *
- *      Juha Lindström       <juhal@users.sourceforge.net>
+ *      Juha LindstrÃ¶m       <juhal@users.sourceforge.net>
  *      Darel Cullen         <darelcullen@users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or modify

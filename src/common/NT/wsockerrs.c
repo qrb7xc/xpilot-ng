@@ -1,7 +1,7 @@
 /* 
  * XPilot, a multiplayer gravity war game.  Copyright (C) 1991-2001 by
  *
- *      Bjørn Stabell        <bjoern@xpilot.org>
+ *      BjÃ¸rn Stabell        <bjoern@xpilot.org>
  *      Ken Ronny Schouten   <ken@xpilot.org>
  *      Bert Gijsbers        <bert@xpilot.org>
  *      Dick Balaska         <dick@xpilot.org>
@@ -23,7 +23,7 @@
 
 /***************************************************************************\
 *  wsockerrs.cpp - Translate winsock error numbers into text				*
-*  Copyright© 1996-1997 - BuckoSoft, Inc.									*
+*  CopyrightÂ© 1996-1997 - BuckoSoft, Inc.									*
 *  Freely distributable.  No charge may be made for this or any derived		*
 *  works without the express written consent of BuckoSoft, Inc.				*
 *																			*

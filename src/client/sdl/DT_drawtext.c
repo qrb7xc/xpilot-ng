@@ -1,7 +1,7 @@
 /*
  * XPilotNG/SDL, an SDL/OpenGL XPilot client.
  *
- * Copyright (C) 2003-2004 Juha Lindström <juhal@users.sourceforge.net>
+ * Copyright (C) 2003-2004 Juha LindstrÃ¶m <juhal@users.sourceforge.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@
 
 /*  DT_drawtext.c
  *  Written By: Garrett Banuk <mongoose@mongeese.org>
- *  Modified for xpilot: Juha Lindström <juhal@users.sourceforge.net>
+ *  Modified for xpilot: Juha LindstrÃ¶m <juhal@users.sourceforge.net>
  */
 
 #include "xpclient_sdl.h"
