@@ -92,7 +92,6 @@ static bool find_size(int *w, int *h)
 {
     int i, d, best_i, best_d;
 
-    int displayIndex = 0;
     int count;
     SDL_DisplayMode **modes = SDL_GetFullscreenDisplayModes(SDL_GetPrimaryDisplay(), &count);
 
@@ -119,7 +118,10 @@ int Init_window(void)
     char *defaultfontname = conf_font_file_string;
     bool gf_exists = true,df_exists = true,gf_init = false, mf_init = false;
     
-    if (!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO)) {
+	SDL_InitFlags init_flags = SDL_INIT_VIDEO;
+	// currently we are playing audio through OpenAL
+	//init_flags |= SDL_INIT_AUDIO;
+	if (!SDL_Init(init_flags)) {
         error("failed to initialize SDL: %s", SDL_GetError());
         return -1;
     }

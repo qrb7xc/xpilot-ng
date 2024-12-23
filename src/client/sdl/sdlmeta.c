@@ -1044,6 +1044,7 @@ static void handleKeyPress(GLWidget *meta, SDL_Keycode key )
 	 * this toggles fullscreen mode
 	 */
 #ifndef _WINDOWS
+                // TODO: SDL_SetWindowFullscreen()
 		/* This segfaults */
 		/* SDL_WM_ToggleFullScreen(MainSDLSurface); */
 #endif
