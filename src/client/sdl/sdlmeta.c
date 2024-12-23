@@ -1109,7 +1109,7 @@ int Meta_window(Connect_param_t *conpar)
 	    error("Couldn't get meta list.");
 	    return -1;
 	} else
-	    warn("Got %d servers.", num_serv);
+		xpinfo("Got %d servers.", num_serv);
     }
     
     if (Welcome_sort_server_list() == -1) {

@@ -119,8 +119,6 @@ int Init_window(void)
     char *defaultfontname = conf_font_file_string;
     bool gf_exists = true,df_exists = true,gf_init = false, mf_init = false;
     
-    warn("SDL_ttf initialized.\n");
-
     if (!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO)) {
         error("failed to initialize SDL: %s", SDL_GetError());
         return -1;
@@ -130,6 +128,8 @@ int Init_window(void)
     	error("SDL_ttf initialization failed: %s", SDL_GetError());
     	return -1;
     }
+
+    xpinfo("SDL_ttf initialized.\n");
 
     Conf_print();
 
