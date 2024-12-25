@@ -52,7 +52,6 @@
 # include <SDL3/SDL_events.h>
 # include <SDL3/SDL_video.h>
 # include <SDL3/SDL_version.h>
-//# include <SDL3/SDL_syswm.h> // header was removed
 # ifdef HAVE_SDL_IMAGE
 #  include <SDL3_image/SDL_image.h>
 # endif
