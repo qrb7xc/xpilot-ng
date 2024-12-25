@@ -190,7 +190,7 @@ char *Get_name_by_key(SDL_Scancode key)
 
 xp_keysym_t String_to_xp_keysym(/*const*/ char *name)
 {
-    SDL_Keycode sdlk = Get_key_by_name(name);
+    SDL_Scancode sdlk = Get_key_by_name(name);
     if (sdlk == SDL_SCANCODE_UNKNOWN) return XP_KS_UNKNOWN;
     return (xp_keysym_t)sdlk;
 }

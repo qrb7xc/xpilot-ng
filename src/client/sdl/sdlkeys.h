@@ -25,7 +25,7 @@
 
 #define NUM_MOUSE_BUTTONS 5
 
-SDL_Keycode Get_key_by_name(const char* name);
-char *Get_name_by_key(SDL_Keycode key);
+SDL_Scancode Get_key_by_name(const char* name);
+char *Get_name_by_key(SDL_Scancode key);
 
 #endif
