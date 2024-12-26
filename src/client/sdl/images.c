@@ -56,7 +56,7 @@ static int Image_init(image_t *img)
     img->data_width = pow2_ceil(img->width);
     img->data_height = pow2_ceil(img->height);
 	
-    warn("Loaded image %s: w=%d, h=%d, fw=%d, dw=%d, dh=%d",
+    xpinfo("Loaded image %s: w=%d, h=%d, fw=%d, dw=%d, dh=%d",
 	 img->filename, img->width, img->height, img->frame_width,
 	 img->data_width, img->data_height);
 	
