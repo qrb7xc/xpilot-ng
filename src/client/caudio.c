@@ -124,11 +124,19 @@ void audioInit(char *display)
 void audioCleanup(void)
 {
     /* release malloc'ed memory here */
-    int i, j;
-
-    for (i = 0; i < MAX_SOUNDS; i++) {
-	for (j = 0; j < table[i].nsounds; j++)
+    for (int i = 0; i < MAX_SOUNDS; i++) {
+	for (int j = 0; j < table[i].nsounds; j++) {
 	    audioDeviceFree(table[i].priv[j]);
+            /* reset duplicates */
+            if (table[i].priv[j]) {
+                for (int n = i + 1; n < MAX_SOUNDS; n++) {
+                    for (int m = 0; m < table[n].nsounds; m++) {
+                        if (table[n].priv[m] == table[i].priv[j])
+                            table[n].priv[m] = NULL;
+                    }
+                }
+            }
+        }
 	XFREE(table[i].filenames);
 	XFREE(table[i].priv);
     }

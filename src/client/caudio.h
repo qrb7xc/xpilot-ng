@@ -41,8 +41,8 @@ extern bool 	sound;			/* option 'sound' */
 int  Handle_audio(int type, int volume);
 void audioInit(char *display);
 void audioCleanup(void);
-void audioEvents(void);
-void audioUpdate(void);
+void audioEvents(void); /* called during event loop */
+void audioUpdate(void); /* called at the end of a new frame update packet */
 int  audioDeviceInit(char *display);
 void audioDevicePlay(char *filename, int type, int volume, void **priv);
 void audioDeviceEvents(void);

@@ -2374,6 +2374,11 @@ int Client_check_pointer_move_interval(void)
 void Client_exit(int status)
 {
     Net_cleanup();
+    defaultCleanup();
     Client_cleanup();
+    //Record_cleanup();
+    //aboutCleanup();
+    //paintdataCleanup();
+
     exit(status);
 }

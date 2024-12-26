@@ -26,7 +26,11 @@
 static void Main_shutdown(void)
 {
     Net_cleanup();
+    defaultCleanup();
     Client_cleanup();
+    //Record_cleanup();
+    //aboutCleanup();
+    //paintdataCleanup();
 }
 
 static void sigcatch(int signum)
