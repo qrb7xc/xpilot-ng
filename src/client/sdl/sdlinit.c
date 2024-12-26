@@ -115,6 +115,9 @@ static bool find_size(int *w, int *h)
 int Init_SDL(void)
 {
     SDL_InitFlags init_flags = SDL_INIT_VIDEO;
+    #ifdef SOUND
+        init_flags |= SDL_INIT_AUDIO;
+    #endif
     if (!SDL_Init(init_flags)) {
         error("failed to initialize SDL: %s", SDL_GetError());
         return -1;
