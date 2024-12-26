@@ -55,6 +55,8 @@ int main(int argc, char *argv[])
 
     init_error(argv[0]);
 
+    Init_SDL();
+
     seedMT((unsigned)time(NULL) ^ Get_process_id());
 
     memset(&connectParam, 0, sizeof(Connect_param_t));

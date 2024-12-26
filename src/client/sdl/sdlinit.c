@@ -112,20 +112,23 @@ static bool find_size(int *w, int *h)
     return true;
 }
 
+int Init_SDL(void)
+{
+    SDL_InitFlags init_flags = SDL_INIT_VIDEO;
+    if (!SDL_Init(init_flags)) {
+        error("failed to initialize SDL: %s", SDL_GetError());
+        return -1;
+    }
+
+    return 0;
+}
+
 int Init_window(void)
 {
     int value;
     char *defaultfontname = conf_font_file_string;
     bool gf_exists = true,df_exists = true,gf_init = false, mf_init = false;
     
-	SDL_InitFlags init_flags = SDL_INIT_VIDEO;
-	// currently we are playing audio through OpenAL
-	//init_flags |= SDL_INIT_AUDIO;
-	if (!SDL_Init(init_flags)) {
-        error("failed to initialize SDL: %s", SDL_GetError());
-        return -1;
-    }
-
     if (!TTF_Init()) {
     	error("SDL_ttf initialization failed: %s", SDL_GetError());
     	return -1;
