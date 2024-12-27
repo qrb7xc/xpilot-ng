@@ -48,6 +48,7 @@ typedef struct sound {
     struct sound    *next;
 } sound_t;
 
+static SDL_AudioDeviceID audioDeviceId;
 static sound_t *ring; // a ring of available sound slots
 static sound_t *looping; // a ring of looping sounds
 static sound_t soundinfo[MAX_SOUNDS]; // all sounds
@@ -55,7 +56,6 @@ static sound_t soundinfo[MAX_SOUNDS]; // all sounds
 static void sample_free(sample_t *sample)
 {
     if (sample) {
-        xpinfo("sample_free %i\n", sample->type);
         SDL_free(sample->wav_data);
 	free(sample);
     }
@@ -102,20 +102,41 @@ static sample_t *sample_load(char *filename, int type)
 
 int audioDeviceInit(char *display)
 {
-    // TODO: open the audio device once, then bind all audio streams
+    audioDeviceId = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, NULL);
+    if (audioDeviceId == 0) {
+        error("failed to create audio device, error: %s", SDL_GetError());
+        return -1;
+    }
+
+    // create audio streams for each sounds that can be played simultaneously
+    // and bind them to the audio device
+    // HACK? Although the src audio format is set right before a sample is played,
+    // an src audio format need to be specified here, otherwise the stream won't play.
+    SDL_AudioSpec dummy_spec = {SDL_AUDIO_U8, 1, 8000};
+    SDL_AudioStream* streams[MAX_SOUNDS];
     for (int i = 0; i < MAX_SOUNDS; i++) {
-        SDL_AudioStream *stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, NULL, NULL, NULL);
+        SDL_AudioStream *stream = SDL_CreateAudioStream(&dummy_spec, NULL);
         if (stream == NULL) {
             error("failed to create audio stream %i, error: %s", i, SDL_GetError());
+            return -1;
         }
-        SDL_ResumeAudioStreamDevice(stream); // unpause
+        streams[i] = stream;
+    }
 
-	soundinfo[i].stream = stream;
+    if (!SDL_BindAudioStreams(audioDeviceId, streams, MAX_SOUNDS)) {
+        error("failed to bind audio stream error: %s", SDL_GetError());
+        return -1;
+    }
+
+    // setup soundinfos
+    for (int i = 0; i < MAX_SOUNDS; i++) {
+	soundinfo[i].stream = streams[i];
 	soundinfo[i].sample = NULL;
 	soundinfo[i].volume = 0;
 	soundinfo[i].updated = 0;
 	soundinfo[i].next = &soundinfo[(i + 1) % MAX_SOUNDS];
     }
+
     ring = soundinfo;
     looping = NULL;
 
@@ -242,6 +263,6 @@ void audioDeviceClose()
         }
     }
 
-    SDL_CloseAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK);
+    SDL_CloseAudioDevice(audioDeviceId);
 }
 #endif
