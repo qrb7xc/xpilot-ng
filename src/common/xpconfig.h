@@ -150,7 +150,7 @@
 #  undef CONF_COMPRESSED_MAPS
 #endif
 #define CONF_ZCAT_EXT			".gz"
-#define CONF_ZCAT_FORMAT 		"gzip -d -c < %s"
+#define CONF_ZCAT_FORMAT 		"gzip -d -c < '%s'"
 
 /*
  * Windows doesn't play with stdin/out well at all... 
