@@ -148,6 +148,8 @@ int Init_window(void)
     /* the flags to pass to SDL_SetVideoMode */
     windowFlags  = SDL_WINDOW_OPENGL;          /* Enable OpenGL in SDL          */
 #ifndef _WINDOWS
+    // TODO: issue with console init when starting as fullscreen
+    //windowFlags |= SDL_WINDOW_FULLSCREEN | SDL_WINDOW_RESIZABLE;
     windowFlags |= SDL_WINDOW_RESIZABLE;       /* Enable window resizing        */
 #else
     windowFlags |= SDL_WINDOW_FULLSCREEN;
@@ -156,14 +158,14 @@ int Init_window(void)
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
     if (windowFlags & SDL_WINDOW_FULLSCREEN) {
-		draw_width = 0;
-		draw_height = 0;
-	}
+        draw_width = 0;
+        draw_height = 0;
+    }
 
     if ((mainWindow = SDL_CreateWindow(TITLE,
-    		 draw_width,
-			 draw_height,
- 			 windowFlags )) == NULL) {
+        draw_width,
+        draw_height,
+        windowFlags )) == NULL) {
       error("Could not find a valid GLX visual for your display");
 	  return -1;
     }
@@ -257,9 +259,9 @@ int Resize_Window( int width, int height )
 {
     SDL_Rect b = {0,0,0,0};
 
-	if (windowFlags & SDL_WINDOW_FULLSCREEN)
-		if (!find_size(&width, &height))
-			return -1;
+    if (windowFlags & SDL_WINDOW_FULLSCREEN)
+        if (!find_size(&width, &height))
+            return -1;
 
     b.w = draw_width = width;
     b.h = draw_height = height;

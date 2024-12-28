@@ -89,32 +89,17 @@ void Toggle_radar_and_scorelist(void)
 
 #ifndef _WINDOWS
 extern int windowFlags;
+extern SDL_Window  *mainWindow;
 void Toggle_fullscreen(void)
 {
-    static int initial_w = -1, initial_h = -1;
-    int w, h;
-
-    if (initial_w == -1) {
-	initial_w = draw_width;
-	initial_h = draw_height;
+    bool wantFullscreen = BIT(windowFlags, SDL_WINDOW_FULLSCREEN) == 0;
+    // windowFlags will be adjusted in SDL_EVENT_WINDOW_ENTER/LEAVE_FULLSCREEN,
+    // content size will be adjusted in SDL_EVENT_WINDOW_RESIZED
+    if (!SDL_SetWindowFullscreen(mainWindow, wantFullscreen))
+    {
+        error("failed to enter fullscreen, error: %s", SDL_GetError());
+        Add_message("Failed to change video mode. [*Client reply*]");
     }
-
-    if (windowFlags & SDL_WINDOW_FULLSCREEN) {
-	windowFlags ^= SDL_WINDOW_FULLSCREEN;
-	Resize_Window(initial_w, initial_h);
-	return;
-    }
-
-    w = initial_w = draw_width;
-    h = initial_h = draw_height;
-
-    windowFlags ^= SDL_WINDOW_FULLSCREEN;
-    if (Resize_Window(w, h) == 0)
-	return;
-
-    windowFlags ^= SDL_WINDOW_FULLSCREEN;
-    Resize_Window(initial_w, initial_h);
-    Add_message("Failed to change video mode. [*Client reply*]");
 }
 #else
 void Toggle_fullscreen(void)
@@ -209,9 +194,17 @@ int Process_event(SDL_Event *evt)
 	}
 	break;
 
-	case SDL_EVENT_WINDOW_RESIZED:
-	Resize_Window(evt->window.data1, evt->window.data2);
+    case SDL_EVENT_WINDOW_RESIZED:
+        Resize_Window(evt->window.data1, evt->window.data2);
 	break;
+
+    case SDL_EVENT_WINDOW_ENTER_FULLSCREEN:
+        SET_BIT(windowFlags, SDL_WINDOW_FULLSCREEN);
+        break;
+
+    case SDL_EVENT_WINDOW_LEAVE_FULLSCREEN:
+        CLR_BIT(windowFlags, SDL_WINDOW_FULLSCREEN);
+        break;
 
     default:
       break;
