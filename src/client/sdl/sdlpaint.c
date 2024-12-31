@@ -55,7 +55,7 @@ int paintSetupMode;
 
 GLWidget *MainWidget = NULL;
 
-extern SDL_Window  *mainWindow;
+extern SDL_Renderer *mainRenderer;
 
 static void Scorelist_button(Uint8 button, bool down, Uint16 x, Uint16 y, void *data)
 {
@@ -329,7 +329,7 @@ void Paint_frame(void)
 	glPopMatrix();
     }
     
-    SDL_GL_SwapWindow(mainWindow);
+    SDL_RenderPresent(mainRenderer);
 
     if (newSecond) {
 	gettimeofday(&tv2, NULL);

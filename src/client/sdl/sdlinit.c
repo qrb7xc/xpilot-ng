@@ -41,7 +41,7 @@ extern char conf_font_file_string[];		/* Default name of font file */
 
 SDL_WindowFlags windowFlags = 0;
 SDL_Window  *mainWindow = NULL;
-SDL_GLContext glContext = NULL;
+SDL_Renderer *mainRenderer = NULL;
 
 font_data gamefont;
 font_data mapfont;
@@ -155,8 +155,6 @@ int Init_window(void)
     windowFlags |= SDL_WINDOW_FULLSCREEN;
 #endif
 
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-
     if (windowFlags & SDL_WINDOW_FULLSCREEN) {
         draw_width = 0;
         draw_height = 0;
@@ -169,31 +167,30 @@ int Init_window(void)
       error("Could not find a valid GLX visual for your display");
 	  return -1;
     }
-    
-    glContext = SDL_GL_CreateContext(mainWindow);
-    if (!glContext) {
-        error("Could not create OpenGL context: %s\n", SDL_GetError());
+
+    // Create an OpenGL renderer until we have migrated all OpenGL calls to
+    // the SDL_Renderer APIs.
+    // The OpenGL renderer will create a GL context and sets the viewport to
+    // the window size.
+    // Note: we need to call SDL_FlushRenderer() before making direct OpenGL calls
+    SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengl");
+
+    mainRenderer = SDL_CreateRenderer(mainWindow, NULL);
+    if (!mainRenderer) {
+        error("Could not create an SDL renderer: %s\n", SDL_GetError());
         SDL_DestroyWindow(mainWindow);
         return -1;
     }
 
+    SDL_SetRenderDrawColorFloat(mainRenderer, 0.0f, 0.0f, 0.0f, 0.0f);
+    SDL_RenderClear(mainRenderer);
+    SDL_SetRenderDrawBlendMode(mainRenderer, SDL_BLENDMODE_BLEND); // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+    SDL_FlushRenderer(mainRenderer);
 
-    SDL_GL_GetAttribute(SDL_GL_RED_SIZE, &value);
-    printf("RGB bpp %d/", value);
-    SDL_GL_GetAttribute(SDL_GL_GREEN_SIZE,&value);
-    printf("%d/", value);
-    SDL_GL_GetAttribute(SDL_GL_BLUE_SIZE, &value);
-    printf("%d ", value);
-    SDL_GL_GetAttribute(SDL_GL_DEPTH_SIZE, &value);
-    printf("Bit Depth is %d\n",value);
-
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glViewport(0, 0, draw_width, draw_height);
+    // TODO: SDL's SetDrawState() sets glortho differently -> switches bottom and top
+    // We might need to create a SDL_Texture to draw into.
     glMatrixMode(GL_PROJECTION);
-    gluOrtho2D(0, draw_width, 0, draw_height);
-    glMatrixMode(GL_MODELVIEW);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glOrtho(0, draw_width, 0, draw_height, 0, 1);
 
     /* this prevents a freetype crash if you pass non existant fonts */
     if (!file_exists(gamefontname)) {
@@ -257,6 +254,9 @@ int Init_window(void)
 /* function to reset our viewport after a window resize */
 int Resize_Window( int width, int height )
 {
+    // viewport is changed automatically by SDL, everything else stays the same
+    return 0;
+
     SDL_Rect b = {0,0,0,0};
 
     if (windowFlags & SDL_WINDOW_FULLSCREEN)
@@ -273,8 +273,8 @@ int Resize_Window( int width, int height )
 
     glLoadIdentity( );
 
-    gluOrtho2D(0, draw_width, 0, draw_height);
-    
+    glOrtho(0, draw_width, 0, draw_height, 0, 1);
+
     /* Make sure we're chaning the model view and not the projection */
     glMatrixMode( GL_MODELVIEW );
     
