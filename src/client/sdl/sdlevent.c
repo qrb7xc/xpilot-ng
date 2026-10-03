@@ -45,12 +45,10 @@ void Platform_specific_pointer_control_set_state(bool on)
 
     if (on) {
     	MainWidget_ShowMenu(MainWidget, false);
-	SDL_WM_GrabInput(SDL_GRAB_ON);
-	SDL_ShowCursor(SDL_DISABLE);
+	SDL_SetRelativeMouseMode(SDL_TRUE);
     } else {
     	MainWidget_ShowMenu(MainWidget, true);
-	SDL_WM_GrabInput(SDL_GRAB_OFF);
-	SDL_ShowCursor(SDL_ENABLE);
+    	SDL_SetRelativeMouseMode(SDL_FALSE);
     }
     
 #ifdef HAVE_XF86MISC
@@ -85,7 +83,7 @@ void Toggle_radar_and_scorelist(void)
 }
 
 #ifndef _WINDOWS
-extern int videoFlags;
+extern int windowFlags;
 void Toggle_fullscreen(void)
 {
     static int initial_w = -1, initial_h = -1;
@@ -96,8 +94,8 @@ void Toggle_fullscreen(void)
 	initial_h = draw_height;
     }
 
-    if (videoFlags & SDL_FULLSCREEN) {
-	videoFlags ^= SDL_FULLSCREEN;
+    if (windowFlags & SDL_WINDOW_FULLSCREEN) {
+	windowFlags ^= SDL_WINDOW_FULLSCREEN;
 	Resize_Window(initial_w, initial_h);
 	return;
     }
@@ -105,11 +103,11 @@ void Toggle_fullscreen(void)
     w = initial_w = draw_width;
     h = initial_h = draw_height;
 
-    videoFlags ^= SDL_FULLSCREEN;
+    windowFlags ^= SDL_WINDOW_FULLSCREEN;
     if (Resize_Window(w, h) == 0)
 	return;
 
-    videoFlags ^= SDL_FULLSCREEN;
+    windowFlags ^= SDL_WINDOW_FULLSCREEN;
     Resize_Window(initial_w, initial_h);
     Add_message("Failed to change video mode. [*Client reply*]");
 }
@@ -136,7 +134,8 @@ int Process_event(SDL_Event *evt)
 	
     case SDL_KEYDOWN:
 	if (Console_isVisible()) break;
-	Keyboard_button_pressed((xp_keysym_t)evt->key.keysym.sym);
+	if (evt->key.repeat == 0)
+	    Keyboard_button_pressed((xp_keysym_t)evt->key.keysym.sym);
 	break;
 	
     case SDL_KEYUP:
@@ -205,9 +204,12 @@ int Process_event(SDL_Event *evt)
 	}
 	break;
 
-    case SDL_VIDEORESIZE:     
-        Resize_Window(evt->resize.w, evt->resize.h);          
-        break;
+    case SDL_WINDOWEVENT:
+	switch (evt->window.event) {
+    	case SDL_WINDOWEVENT_RESIZED:
+	    Resize_Window(evt->window.data1, evt->window.data2);
+	    break;
+	}
 
     default:
       break;

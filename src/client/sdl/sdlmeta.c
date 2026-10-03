@@ -62,6 +62,8 @@
 #define STATUSWIDGET      104
 #define PLAYERLISTWIDGET  105
 
+extern SDL_Window  *mainWindow;
+
 static int status_column_widths[] = { 100, 0, 100, 70 };
 
 typedef struct {
@@ -986,7 +988,9 @@ static GLWidget *Init_MetaWidget(list_t servers)
     AppendGLWidgetList(&(tmp->children), info->table);
 
 #ifdef HAVE_SDL_IMAGE
-    surface = IMG_Load(CONF_TEXTUREDIR "sdlmetabg.png");
+    char texture_file[CONF_MAXLEN];
+    snprintf(texture_file, CONF_MAXLEN, "%s%s", Conf_texturedir(), "sdlmetabg.png");
+    surface = IMG_Load(texture_file);
     if (surface) {
 	info->texture = SDL_GL_LoadTexture(surface, &(info->txc));
 	SDL_FreeSurface(surface);
@@ -1016,7 +1020,7 @@ static bool join_server(Connect_param_t *conpar, server_info_t *sip)
     return false;
 }
 
-static void handleKeyPress(GLWidget *meta, SDL_keysym *keysym )
+static void handleKeyPress(GLWidget *meta, SDL_Keysym *keysym )
 {
     /*static unsigned int row = 1;*/
     SDL_Event evt;
@@ -1189,7 +1193,7 @@ int Meta_window(Connect_param_t *conpar)
 	glEnable(GL_SCISSOR_TEST);
 	DrawGLWidgetsi(meta, 0, 0, draw_width, draw_height);
 	glDisable(GL_SCISSOR_TEST);
-	SDL_GL_SwapBuffers();
+	SDL_GL_SwapWindow(mainWindow);
 	
 	SDL_WaitEvent(&evt);
 	do {
@@ -1253,7 +1257,9 @@ int Meta_window(Connect_param_t *conpar)
 				   target->motiondata);
 		break;
 
-	    case SDL_VIDEOEXPOSE:
+	    case SDL_WINDOWEVENT:
+	    	switch (evt.window.event) {
+	    case SDL_WINDOWEVENT_EXPOSED:
 		glDisable(GL_SCISSOR_TEST);
 		set_alphacolor(blackRGBA);
 		glBegin(GL_QUADS);
@@ -1264,6 +1270,7 @@ int Meta_window(Connect_param_t *conpar)
 		glEnd();
 		glEnable(GL_SCISSOR_TEST);
 		break;
+		}
 	    }
 	} while (SDL_PollEvent(&evt));
     }	

@@ -29,7 +29,7 @@
 # include "begin_code.h"
 #endif
 #ifdef MACOSX_FRAMEWORKS
-# include <SDL/begin_code.h>
+# include <SDL2/begin_code.h>
 #endif
 
 /*! Number of visible characters in a line. Lines in the history, the commandline, or CON_Out strings cannot be longer
@@ -71,7 +71,6 @@ extern "C" {
 	/*! This is a struct for each consoles data */
 	typedef struct console_information_td {
 		int Visible;						/*! enum that tells which visible state we are in CON_CLOSED, CON_OPEN, CON_CLOSING, CON_OPENING */
-		int WasUnicode;						/*! stores the UNICODE value before the console was shown. On Hide() the UNICODE value is restored. */
 		int RaiseOffset;					/*! Offset used in show/hide animation */
 		int HideKey;						/*! the key that can hide the console */
 		char **ConsoleLines;				/*! List of all the past lines */
@@ -232,7 +231,7 @@ extern "C" {
 # include "close_code.h"
 #endif
 #ifdef MACOSX_FRAMEWORKS
-# include <SDL/close_code.h>
+# include <SDL2/close_code.h>
 #endif
 
 #endif /* SDL_CONSOLE_H */
