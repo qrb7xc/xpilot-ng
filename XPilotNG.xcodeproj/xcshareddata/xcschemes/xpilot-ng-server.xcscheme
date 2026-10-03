@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
    LastUpgradeVersion = "2720"
-   version = "1.3">
+   version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
-      buildImplicitDependencies = "YES">
+      buildImplicitDependencies = "YES"
+      buildArchitectures = "Automatic">
       <BuildActionEntries>
          <BuildActionEntry
             buildForTesting = "YES"
@@ -14,9 +15,8 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "8D1107260486CEB800E47090"
-               BuildableName = "XPilotNG.app"
-               BlueprintName = "XPilotNG.app"
+               BlueprintIdentifier = "E3F9396C0812CCDE00F425B2"
+               BuildableName = "xpilot-ng-server"
                ReferencedContainer = "container:XPilotNG.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -26,9 +26,8 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES">
-      <Testables>
-      </Testables>
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      shouldAutocreateTestPlan = "YES">
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
@@ -39,14 +38,15 @@
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "NO"
       debugServiceExtension = "internal"
-      allowLocationSimulation = "YES">
+      allowLocationSimulation = "YES"
+      viewDebuggingEnabled = "No"
+      queueDebuggingEnabled = "No">
       <BuildableProductRunnable
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "8D1107260486CEB800E47090"
-            BuildableName = "XPilotNG.app"
-            BlueprintName = "XPilotNG.app"
+            BlueprintIdentifier = "E3F9396C0812CCDE00F425B2"
+            BuildableName = "xpilot-ng-server"
             ReferencedContainer = "container:XPilotNG.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -61,9 +61,8 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "8D1107260486CEB800E47090"
-            BuildableName = "XPilotNG.app"
-            BlueprintName = "XPilotNG.app"
+            BlueprintIdentifier = "E3F9396C0812CCDE00F425B2"
+            BuildableName = "xpilot-ng-server"
             ReferencedContainer = "container:XPilotNG.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

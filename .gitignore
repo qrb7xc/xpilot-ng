@@ -11,3 +11,8 @@ configure.lineno
 configure.scan
 configure.sh
 stamp-h1
+
+# Xcode project file exclusions
+xcuserdata
+*.xcuserstate
+*.xcworkspace/
