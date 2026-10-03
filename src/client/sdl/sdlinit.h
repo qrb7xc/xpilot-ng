@@ -25,4 +25,6 @@ int Init_SDL(void);
 int Init_window(void);
 int Resize_Window( int width, int height );
 
+#define USE_SDL_RENDERTARGET 0
+
 #endif

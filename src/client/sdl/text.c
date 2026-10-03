@@ -239,6 +239,7 @@ void fontclean(font_data *ft_font)
  */
 void pushScreenCoordinateMatrix(void)
 {
+    #if !USE_SDL_RENDERTARGET
 	GLint	viewport[4];
 	glPushAttrib(GL_TRANSFORM_BIT);
 	glGetIntegerv(GL_VIEWPORT, viewport);
@@ -247,6 +248,7 @@ void pushScreenCoordinateMatrix(void)
 	glLoadIdentity();
 	gluOrtho2D(viewport[0],viewport[2],viewport[1],viewport[3]);
 	glPopAttrib();
+    #endif
 }
 
 /* Pops the projection matrix without changing the current
@@ -254,10 +256,12 @@ void pushScreenCoordinateMatrix(void)
  */
 void pop_projection_matrix(void)
 {
+    #if !USE_SDL_RENDERTARGET
 	glPushAttrib(GL_TRANSFORM_BIT);
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
 	glPopAttrib();
+    #endif
 }
 
 

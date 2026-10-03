@@ -26,7 +26,6 @@
 #include "console.h"
 #include "sdlkeys.h"
 #include "glwidgets.h"
-#include "sdlpaint.h"
 #include "sdlinit.h"
 #include "scrap.h"
 
@@ -41,7 +40,8 @@ extern char conf_font_file_string[];		/* Default name of font file */
 
 SDL_WindowFlags windowFlags = 0;
 SDL_Window  *mainWindow = NULL;
-SDL_Renderer *mainRenderer = NULL;
+SDL_Renderer *renderer = NULL;
+SDL_Texture *renderTarget = NULL;
 
 font_data gamefont;
 font_data mapfont;
@@ -175,22 +175,31 @@ int Init_window(void)
     // Note: we need to call SDL_FlushRenderer() before making direct OpenGL calls
     SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengl");
 
-    mainRenderer = SDL_CreateRenderer(mainWindow, NULL);
-    if (!mainRenderer) {
+    renderer = SDL_CreateRenderer(mainWindow, NULL);
+    if (!renderer) {
         error("Could not create an SDL renderer: %s\n", SDL_GetError());
         SDL_DestroyWindow(mainWindow);
         return -1;
     }
 
-    SDL_SetRenderDrawColorFloat(mainRenderer, 0.0f, 0.0f, 0.0f, 0.0f);
-    SDL_RenderClear(mainRenderer);
-    SDL_SetRenderDrawBlendMode(mainRenderer, SDL_BLENDMODE_BLEND); // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-    SDL_FlushRenderer(mainRenderer);
+    #if USE_SDL_RENDERTARGET
+    // TODO: use an SDL_Texture as a render target which uses bottom/left origin.
+    renderTarget = SDL_CreateTexture(
+        renderer, SDL_GetWindowPixelFormat(mainWindow), SDL_TEXTUREACCESS_TARGET, draw_width, draw_height);
+    SDL_SetRenderTarget(renderer, renderTarget);
+    #endif
 
-    // TODO: SDL's SetDrawState() sets glortho differently -> switches bottom and top
-    // We might need to create a SDL_Texture to draw into.
+    SDL_SetRenderDrawColorFloat(renderer, 0.0f, 0.0f, 0.0f, 0.0f);
+    SDL_RenderClear(renderer);
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND); // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+    SDL_FlushRenderer(renderer);
+
+    // Set bottom/left as origin as drawing directly into the SDL window
+    // uses top/left origin.
+    #if !USE_SDL_RENDERTARGET
     glMatrixMode(GL_PROJECTION);
     glOrtho(0, draw_width, 0, draw_height, 0, 1);
+    #endif
 
     /* this prevents a freetype crash if you pass non existant fonts */
     if (!file_exists(gamefontname)) {
@@ -255,7 +264,9 @@ int Init_window(void)
 int Resize_Window( int width, int height )
 {
     // viewport is changed automatically by SDL, everything else stays the same
-    return 0;
+    // TODO: this is also called when the option 'geometry' is changed during the game
+    // but that never happens (?).
+    //return 0;
 
     SDL_Rect b = {0,0,0,0};
 
@@ -295,6 +306,7 @@ void Platform_specific_cleanup(void)
     fontclean(&gamefont);
     fontclean(&mapfont);
     TTF_Quit();
+    /* SDL will clean up the window/renderer for us. */
     SDL_Quit();
 }
 

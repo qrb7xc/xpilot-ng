@@ -163,4 +163,6 @@ int Check_view_dimensions(void);
 void Store_hud_options(void);
 void Store_paintradar_options(void);
 
+void Finalize_paint();
+
 #endif

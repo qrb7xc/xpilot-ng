@@ -62,9 +62,6 @@
 #define STATUSWIDGET      104
 #define PLAYERLISTWIDGET  105
 
-extern SDL_Renderer *mainRenderer;
-
-
 static int status_column_widths[] = { 100, 0, 100, 70 };
 
 typedef struct {
@@ -1195,7 +1192,7 @@ int Meta_window(Connect_param_t *conpar)
 	glEnable(GL_SCISSOR_TEST);
 	DrawGLWidgetsi(meta, 0, 0, draw_width, draw_height);
 	glDisable(GL_SCISSOR_TEST);
-        SDL_RenderPresent(mainRenderer);
+        Finalize_paint();
 
 	SDL_WaitEvent(&evt);
 	do {
@@ -1213,9 +1210,11 @@ int Meta_window(Connect_param_t *conpar)
 		    if (join_server(conpar, server)) {
 			Close_Widget(&root);
 			glEnable(GL_BLEND);
+                        #if !USE_SDL_RENDERTARGET
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
 			glOrtho(0, draw_width, 0, draw_height, 0, 1);
+                        #endif
 			return 0;
 		    }
 		} else if (evt.user.code == EVENT_REFRESH) {

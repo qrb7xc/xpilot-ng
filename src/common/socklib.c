@@ -73,8 +73,8 @@ static int sock_flags_test_any(sock_t *sock, unsigned bits)
 
 static int sock_set_error(sock_t *sock, int err, sock_call_t call, int line)
 {
-    DEB(printf("set error %d, %d, %d.  \"%s\"\n",
-	       err, call, line, strerror(err)));
+//    DEB(printf("set error %d, %d, %d.  \"%s\"\n",
+//	       err, call, line, strerror(err)));
 #ifdef _WINDOWS
 	DEB(printf("WSAGetLastError: %d\n", WSAGetLastError()));
 #endif

@@ -55,7 +55,8 @@ int paintSetupMode;
 
 GLWidget *MainWidget = NULL;
 
-extern SDL_Renderer *mainRenderer;
+extern SDL_Renderer *renderer;
+extern SDL_Texture *renderTarget;
 
 static void Scorelist_button(Uint8 button, bool down, Uint16 x, Uint16 y, void *data)
 {
@@ -256,10 +257,12 @@ void setupPaint_HUD(void)
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+    #if !USE_SDL_RENDERTARGET
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
-    gluOrtho2D(0, draw_width, draw_height, 0);
+    glOrtho(0, draw_width, draw_height, 0, 0, 1);
+    #endif
 }
 
 void Paint_frame(void)
@@ -329,7 +332,7 @@ void Paint_frame(void)
 	glPopMatrix();
     }
     
-    SDL_RenderPresent(mainRenderer);
+    Finalize_paint();
 
     if (newSecond) {
 	gettimeofday(&tv2, NULL);
@@ -337,11 +340,61 @@ void Paint_frame(void)
     }
 }
 
+static void Paint_clock(bool redraw) {
+#if 0 // TODO: the following is the X11 code
+  int second, minute, hour, border = 3;
+  struct tm *m;
+  char buf[16];
+  static unsigned width;
+  unsigned height = scoreListFont->ascent + scoreListFont->descent + 3;
+
+  if (!clockColor) {
+    if (width != 0) {
+      XSetForeground(dpy, scoreListGC, colors[windowColor].pixel);
+      XFillRectangle(dpy, playersWindow, scoreListGC,
+                     256 - (int)(width + 2 * border), 0, width + 2 * border,
+                     height);
+      width = 0;
+    }
+    return;
+  }
+
+  if (!redraw && !newSecond)
+    return;
+
+  m = localtime(&currentTime);
+  second = m->tm_sec;
+  minute = m->tm_min;
+  hour = m->tm_hour;
+  /*warn("drawing clock at %02d:%02d:%02d", hour, minute, second);*/
+
+  if (!instruments.clockAMPM)
+    sprintf(buf, "%02d:%02d" /*":%02d"*/, hour, minute /*, second*/);
+  else {
+    char tmpchar = 'A';
+    /* strftime(buf, sizeof(buf), "%l:%M%p", m); */
+    if (hour > 12) {
+      tmpchar = 'P';
+      hour %= 12;
+    }
+    sprintf(buf, "%2d:%02d%cM", hour, minute, tmpchar);
+  }
+  width = XTextWidth(scoreListFont, buf, (int)strlen(buf));
+  XSetForeground(dpy, scoreListGC, colors[windowColor].pixel);
+  XFillRectangle(dpy, playersWindow, scoreListGC,
+                 256 - (int)(width + 2 * border), 0, width + 2 * border,
+                 height);
+  ShadowDrawString(dpy, playersWindow, scoreListGC, 256 - (int)(width + border),
+                   scoreListFont->ascent + 4, buf, colors[clockColor].pixel,
+                   colors[BLACK].pixel);
+#endif
+}
+
 void Paint_score_start(void)
 {
     char	headingStr[MSG_LEN];
     SDL_Surface *header;
-	SDL_Color fg;
+    SDL_Color fg;
 
     if (showUserName)
 	strlcpy(headingStr, "NICK=USER@HOST", sizeof(headingStr));
@@ -377,6 +430,7 @@ void Paint_score_start(void)
 	     scoreListWin.w - SCORE_BORDER,
 	     scoreEntryRect.y + header->h + 2,
 	     0, 128, 0, 255);
+    Paint_clock(true);
     SDL_DestroySurface(header);
 }
 
@@ -520,3 +574,16 @@ void Paint_score_entry(int entry_num, other_t *other, bool is_team)
     SDL_DestroySurface(line);
 }
 
+void Finalize_paint()
+{
+    #if USE_SDL_RENDERTARGET
+    SDL_SetRenderTarget(renderer, NULL);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+    SDL_RenderClear(renderer);  /* just in case. */
+    SDL_RenderTexture(renderer, renderTarget, NULL, NULL);
+    SDL_RenderPresent(renderer);
+    SDL_SetRenderTarget(renderer, renderTarget);
+    #else
+    SDL_RenderPresent(renderer);
+    #endif
+}

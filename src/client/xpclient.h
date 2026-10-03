@@ -1,4 +1,4 @@
-/* 
+/*
  * XPilot NG, a multiplayer space war game.
  *
  * Copyright (C) 1991-2001 by
@@ -26,27 +26,27 @@
 #ifndef XPCLIENT_H
 #define XPCLIENT_H
 
-#include "xpcommon.h"
+#include "xpcommon.h" // IWYU pragma: export
 
-#include "keys.h"
+#include "keys.h" // IWYU pragma: export
 
 #ifdef HAVE_LIBZ
-#  include <zlib.h>
+#include <zlib.h>
 #else
-#  error "Header zlib.h missing. Please install zlib."
+#error "Header zlib.h missing. Please install zlib."
 #endif
 
 #ifdef _WINDOWS
 #ifdef _MSC_VER
-# include <direct.h>
-# define snprintf _snprintf
-# define printf Trace
-# define X_OK 0
+#include <direct.h>
+#define snprintf _snprintf
+#define printf Trace
+#define X_OK 0
 #endif
-# define F_OK 0
-# define W_OK 2
-# define R_OK 4
-# define mkdir(A,B) _mkdir(A)
+#define F_OK 0
+#define W_OK 2
+#define R_OK 4
+#define mkdir(A, B) _mkdir(A)
 extern bool threadedDraw; /* default.c */
 #endif
 
@@ -54,6 +54,7 @@ extern bool threadedDraw; /* default.c */
  * Client header files that are "generic", that is common to all client
  * implementations.
  */
+// IWYU pragma: begin_exports
 #include "client.h"
 #include "clientcommand.h"
 #include "clientrank.h"
@@ -72,6 +73,6 @@ extern bool threadedDraw; /* default.c */
 #ifdef SOUND
 # include "caudio.h"
 #endif
+// IWYU pragma: end_exports
 
 #endif /* XPCLIENT_H */
-

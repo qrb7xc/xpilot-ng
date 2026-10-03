@@ -124,12 +124,14 @@ static GLuint polyListBase = 0;
 static GLuint polyEdgeListBase = 0;
 static GLuint asteroid = 0;
 
-irec_t *select_bounds;
+irec_t *select_bounds = NULL;
 
 string_tex_t score_object_texs[MAX_SCORE_OBJECTS];
 string_tex_t meter_texs[MAX_METERS];
 string_tex_t message_texs[2*MAX_MSGS];
 string_tex_t HUD_texs[MAX_HUD_TEXS+MAX_SCORE_OBJECTS];
+
+extern SDL_Renderer *renderer;
 
 int Gui_init(void);
 void Gui_cleanup(void);
@@ -141,6 +143,34 @@ void set_alphacolor(Uint32 color)
     	       (color >> 16) & 255,
 	       (color >> 8) & 255,
 	       color & 255);
+}
+
+void sdl_set_alphacolor(Uint32 color)
+{
+    SDL_SetRenderDrawColor(renderer,
+        (color >> 24) & 255,
+        (color >> 16) & 255,
+        (color >> 8) & 255,
+        color & 255);
+}
+
+void sdl_render_line(float x1, float y1, float x2, float y2)
+{
+    SDL_RenderLine(renderer, x1, y1, x2, y2);
+}
+
+void sdl_render_rect(const SDL_FRect *rect)
+{
+    SDL_RenderRect(renderer, rect);
+}
+
+void sdl_render_polygon(const SDL_FPoint *points, int count)
+{
+    // TODO: close path
+    SDL_RenderLines(renderer, points, count);
+    SDL_FPoint first = points[0];
+    SDL_FPoint last = points[count - 1];
+    //SDL_RenderLine(mainRenderer, last.x, last.y, first.x, first.y);
 }
 
 static GLubyte get_alpha(Uint32 color)
@@ -1516,6 +1546,36 @@ static void Paint_meter(int xoff, int y, string_tex_t *tex, int val, int max,
 	x_alignment = RIGHT;
     }
 
+#if 0
+    sdl_set_alphacolor(meter_color);
+    SDL_FPoint points[] = {
+        {x, y},
+        {x, y+2+meterHeight-3},
+        {x+(int)(((meterWidth)*val)/(max?max:1)), y+2+meterHeight-3},
+        {x+(int)(((meterWidth)*val)/(max?max:1)), y}
+    };
+    sdl_render_polygon(points, SDL_arraysize(points));
+
+    /* meterBorderColorRGBA = 0 obviously means no meter borders are drawn */
+    if (meterBorderColorRGBA) {
+    	color = meterBorderColorRGBA;
+
+	sdl_set_alphacolor(color);
+        SDL_FRect border_rect = {x, y, meterWidth, meterHeight};
+        sdl_render_rect(&border_rect);
+
+        sdl_render_line(x,       y-4,    x,       y+meterHeight+4);
+        sdl_render_line(x+mw4_4, y-4,    x+mw4_4, y+meterHeight+4);
+        sdl_render_line(x+mw2_4, y-3,    x+mw2_4, y+meterHeight+3);
+        sdl_render_line(x+mw1_4, y-1,    x+mw1_4, y+meterHeight+1);
+        sdl_render_line(x+mw3_4, y-1,    x+mw3_4, y+meterHeight+1);
+    }
+
+#endif
+    #if USE_SDL_RENDERTARGET
+    SDL_FlushRenderer(renderer);
+    #endif
+
     set_alphacolor(meter_color);
     glBegin( GL_POLYGON );
     	glVertex2i(x,y);
@@ -1523,8 +1583,6 @@ static void Paint_meter(int xoff, int y, string_tex_t *tex, int val, int max,
     	glVertex2i(x+(int)(((meterWidth)*val)/(max?max:1)),y+2+meterHeight-3);
     	glVertex2i(x+(int)(((meterWidth)*val)/(max?max:1)),y);
     glEnd();
-
-
 
     /* meterBorderColorRGBA = 0 obviously means no meter borders are drawn */
     if (meterBorderColorRGBA) {

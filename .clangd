@@ -1,0 +1,27 @@
+# clangd configuration file <https://clangd.llvm.org/config.html>
+# NOTE: settings in ~/Library/Preferences/clangd/config.yaml take precedence over these settings
+
+CompileFlags:
+  # the compilation database is located at: build/clang-tools/compile_commands.json
+  CompilationDatabase: xpilot/macos
+
+Index:
+  Background: Build    # Enable slow background indexing
+  StandardLibrary: Yes
+
+Style:
+  FullyQualifiedNamespaces:
+    - dva
+
+Diagnostics:
+  UnusedIncludes: Strict
+  # ClangTidy: checks are configured in .clang-tidy
+
+InlayHints:
+  # Turned off because inlay hints can be a bit annoying in the editor.
+  # If you use VS Code you can also turn inlay hints on here
+  # and toggle them with the command: clangd.toggleInlayHints
+  Enabled: No
+  Designators: Yes
+  DeducedTypes: Yes
+  ParameterNames: Yes
