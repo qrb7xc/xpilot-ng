@@ -486,9 +486,10 @@
         "frameworks",
       ],
       "build-settings": {
+        "ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS": "NO",
         "COPY_PHASE_STRIP[config=Debug]": "NO",
         "COPY_PHASE_STRIP[config=Release]": "YES",
-        "CURRENT_PROJECT_VERSION": "4.7.3ng",
+        "CURRENT_PROJECT_VERSION": "4.7.4",
         "DEAD_CODE_STRIPPING": "YES",
         "DEBUG_INFORMATION_FORMAT[config=Release]": "dwarf-with-dsym",
         "FRAMEWORK_SEARCH_PATHS": [
@@ -507,6 +508,7 @@
           "@executable_path/../Frameworks",
         ],
         "MACOSX_DEPLOYMENT_TARGET": "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)",
+        "MARKETING_VERSION": "4.7.4ng",
         "PRODUCT_BUNDLE_IDENTIFIER": "org.xpilot.app.xpilot-ng",
         "PRODUCT_NAME": "XPilotNG",
       },
@@ -722,7 +724,7 @@
         "GCC_OPTIMIZATION_LEVEL[config=Debug]": "0",
         "INFOPLIST_FILE": "contrib/macosx/xpngcc-Info.plist",
         "MACOSX_DEPLOYMENT_TARGET": "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)",
-        "PRODUCT_NAME": "XPilotNG Control Center.app",
+        "PRODUCT_NAME": "XPilotNG Control Center",
       },
     },
   ],

@@ -1,4 +1,4 @@
 /* Localized versions of Info.plist keys */
 
-CFBundleName = "XPilotNG";
-NSHumanReadableCopyright = "(c) __MyCompanyName__, 2005";
+CFBundleName = "XPilot NG";
+NSHumanReadableCopyright = "(c) 1991-2026";
